@@ -1,0 +1,3 @@
+Builds on Clarkar00's widget but uses the existing Homarr apps and ping plumbing.
+
+Dense app links grouped by keyword, with live status dots. Tag apps with comma-separated keywords in the description, e.g. audio,favourites; an app can carry several. "Categories to show" sets which groups appear AND their order; blank shows all. Status pings up to 24 apps in one batched request per copy and uses each app's ping URL, so remote services work. Off on a copy means no request at all.

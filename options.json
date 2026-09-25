@@ -1,0 +1,122 @@
+{
+  "categories": {
+    "label": "Categories to show",
+    "description": "Comma-separated keywords, in the order you want the groups to appear, for example audio, youtube, arrs. Matches the keywords in each app description, case-insensitive, spaces ignored. Write keyword=Heading to show a heading other than the keyword itself, for example public=Alpha, admin=Bravo. The heading keeps the case and spaces you type. Leave blank to see every category this widget can find, with counts, ready to copy.",
+    "control": "text",
+    "default": ""
+  },
+  "showCategoryHeader": {
+    "label": "Show category headings",
+    "description": "Print the category name above each group. Off still keeps the gap between groups, so they stay visually separated rather than running together. Useful when a widget shows a single category and the heading just repeats the tile title.",
+    "control": "switch",
+    "default": true
+  },
+  "headerUppercase": {
+    "label": "Uppercase the headings",
+    "description": "Headings are printed in capitals by default. Turn this off to keep exactly the case you typed, which matters once you are naming groups yourself: system=Charlie renders as CHARLIE with this on, Charlie with it off.",
+    "control": "switch",
+    "default": true
+  },
+  "showStatus": {
+    "label": "Show status dots",
+    "description": "Ping each app shown and colour a dot from the reply. Off makes this a plain link list and costs no requests at all. Everything below this until Show status code needs it on.",
+    "control": "switch",
+    "default": true
+  },
+  "statusLimit": {
+    "label": "Max apps with a dot",
+    "description": "How many apps get pinged, counting from the top. Leave blank for 24, which is the batch width. Apps past the limit still show, just without a dot.",
+    "control": "text",
+    "default": "24"
+  },
+  "highlightDown": {
+    "label": "Highlight unreachable apps",
+    "description": "Give a card that failed to respond a red border and a faint red fill, so a service being down reads at a glance rather than needing you to spot the dot.",
+    "control": "switch",
+    "default": true
+  },
+  "showCodes": {
+    "label": "Show status code",
+    "description": "Print the HTTP status under each app name, for example 200 or 404. An unreachable app reads DOWN instead.",
+    "control": "switch",
+    "default": true
+  },
+  "codePrefix": {
+    "label": "Status code prefix",
+    "description": "Text placed before the status code, so a bare number is not mistaken for the latency beside it. Defaults to \"HTTP \" (note the trailing space). Clear it for just the number. DOWN never takes a prefix.",
+    "control": "text",
+    "default": "HTTP "
+  },
+  "codeColor": {
+    "label": "Status code colour",
+    "description": "Colour for codes that count as OK: 2xx, 3xx, and 401/403. Any Mantine colour. Blank uses gray.6.",
+    "control": "text",
+    "default": "gray.6"
+  },
+  "codeWarnColor": {
+    "label": "Status code colour: questionable",
+    "description": "Colour for other 4xx and 5xx codes, which answered but are unhappy. Blank uses orange.6.",
+    "control": "text",
+    "default": "orange.6"
+  },
+  "codeErrColor": {
+    "label": "Status code colour: error",
+    "description": "Colour for anything outside 1xx-5xx. Blank uses red.6. Unreachable apps read DOWN and are always red regardless.",
+    "control": "text",
+    "default": "red.6"
+  },
+  "showLatency": {
+    "label": "Show ping latency",
+    "description": "Print how long the ping took, beside the status code. A service answering in 800 ms instead of 6 ms is degraded, which a green dot alone will not tell you.",
+    "control": "switch",
+    "default": true
+  },
+  "latencyColor": {
+    "label": "Latency colour",
+    "description": "Colour below the warning threshold. Blank uses gray.6.",
+    "control": "text",
+    "default": "gray.6"
+  },
+  "latencyWarnMs": {
+    "label": "Latency warning threshold (ms)",
+    "description": "Latency at or above this switches to the warning colour. Blank uses 300. Enter 0 to turn the band off.",
+    "control": "text",
+    "default": "300"
+  },
+  "latencyWarnColor": {
+    "label": "Latency colour: warning",
+    "description": "Used at or above the warning threshold. Blank uses blue.4.",
+    "control": "text",
+    "default": "blue.4"
+  },
+  "latencyBadMs": {
+    "label": "Latency bad threshold (ms)",
+    "description": "Latency at or above this switches to the bad colour. Blank uses 1000. Enter 0 to turn the band off. Should be higher than the warning threshold.",
+    "control": "text",
+    "default": "1000"
+  },
+  "latencyBadColor": {
+    "label": "Latency colour: bad",
+    "description": "Used at or above the bad threshold. Blank uses yellow.6.",
+    "control": "text",
+    "default": "yellow.6"
+  },
+  "statusAlignRight": {
+    "label": "Align status line right",
+    "description": "Push the status code and latency to the right edge of the card. They move together, since they share one line under the app name.",
+    "control": "switch",
+    "default": false
+  },
+  "hoverUnderline": {
+    "label": "Underline name on hover",
+    "description": "Underline the app name when you hover its card, so it reads as clickable. Homarr's sandbox blocks every other hover effect.",
+    "control": "switch",
+    "default": true
+  },
+  "scrollWhenTall": {
+    "label": "Scroll when the list is too tall",
+    "description": "Show a scrollbar if the apps do not fit the tile. Off clips instead, which is tidier on a tile you have already sized to fit, but hides anything past the bottom edge.",
+    "control": "switch",
+    "default": true
+  }
+}

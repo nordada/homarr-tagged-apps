@@ -1,0 +1,28 @@
+{
+  "apps": {
+    "source": "default",
+    "kind": "query",
+    "method": "GET",
+    "path": "/api/apps",
+    "trigger": "load",
+    "auth": "inherit",
+    "permission": "view",
+    "cacheSeconds": 60
+  },
+  "pings": {
+    "source": "default",
+    "kind": "query",
+    "method": "GET",
+    "path": "/api/trpc/widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping",
+    "trigger": "manual",
+    "query": {
+      "batch": "1",
+      "input": {
+        "$param": "q"
+      }
+    },
+    "auth": "inherit",
+    "permission": "view",
+    "cacheSeconds": 60
+  }
+}
