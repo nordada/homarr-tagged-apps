@@ -37,7 +37,14 @@ empty description never appear.
 
 Leave the `categories` option blank and the widget lists every keyword it can
 see, with counts, ready to copy. If nothing is tagged yet it explains how to
-start instead.
+start instead. Both of those states carry a link back to this documentation,
+and both stop rendering the moment `categories` is set, so a configured board
+never shows either.
+
+A link cannot go in an option's description instead: Homarr passes every
+description through as an escaped JSX child, so markdown and HTML render
+literally. `Anchor` inside the template is the only way to get a clickable
+one.
 
 ## Category headings
 

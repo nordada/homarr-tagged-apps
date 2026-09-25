@@ -123,6 +123,17 @@ ALL = ('[data.apps.filter((a)=>(a.description||"")!=="")'
        '.join(",").split(",").filter((k)=>k!=="")'
        '.sort((a,b)=>a<b?-1:(a>b?1:0))]')
 
+# Shown only in the two unconfigured states below, which stop rendering the
+# moment `categories` is set. So a working board never carries this, and no
+# option is needed to switch it off.
+#
+# A link cannot go in an option description: every Homarr render path passes
+# descriptions as an escaped JSX child, so markdown and HTML render literally.
+# Anchor inside the template is the only way to get a clickable one.
+DOCS_URL = "https://github.com/nordada/homarr-tagged-apps"
+DOCS = ('<Anchor href="' + DOCS_URL + '" target="_blank" size="xs" ta="center">'
+        'Options and setup guide</Anchor>')
+
 EMPTY = ('<Stack gap={8}>'
          '<Text fw={700} fz="sm" tt="uppercase" ta="center">No categories yet</Text>'
          '<Text size="sm" c="dimmed" ta="center" style={{lineHeight:1.5}}>'
@@ -133,6 +144,7 @@ EMPTY = ('<Stack gap={8}>'
          '<Text size="xs" c="dimmed" ta="center" style={{lineHeight:1.5}}>'
          'Apps with an empty description never appear here. Once you have tagged a '
          'few, this panel lists them for you.</Text>'
+         + DOCS +
          '</Stack>')
 
 FOUND = ('<Stack gap={10}>'
@@ -153,6 +165,7 @@ FOUND = ('<Stack gap={10}>'
          '<Text size="xs" c="dimmed" ta="center" style={{lineHeight:1.5}}>'
          'The number is how many apps carry that category. A widget cannot see other '
          'widgets, so every category is listed, not just unused ones.</Text>'
+         + DOCS +
          '</Stack>')
 
 CATALOGUE = ('<Stack gap={10} p="xs" style={{' + SEL + ',cursor:\'text\'}}>'
