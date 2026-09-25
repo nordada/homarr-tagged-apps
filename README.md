@@ -62,6 +62,28 @@ That last check matters because the workbench only rejects an over-long
 description **on save**, after you have pasted, and the error does not name the
 offending option.
 
+## Checking a template before you paste it
+
+`build-template.py` checks structure. It cannot tell you whether an expression
+survives the interpreter, because that depends on the Homarr build. This does:
+
+```bash
+bash tools/sandbox-check.sh release/v2
+bash tools/sandbox-check.sh 83e3b22f
+```
+
+It fetches Homarr's `packages/custom-widgets` at that ref, bundles the real
+interpreter and renders `template.jsx` through it once per case, with the
+categories option blank, renamed, mixed and matching nothing. Any ref, branch or
+commit that carries the package works.
+
+Two refs rather than one, because the sandbox is not one fixed set of rules. The
+`.trim()` failure below rendered fine on the current source and failed on the
+build it was deployed to, and checking only the newer one would have said the
+template was healthy.
+
+Needs node, npx and network. Everything lands in `.sandbox-check/`, gitignored.
+
 ## The sandbox
 
 Templates run in a restricted runtime: a whitelist of Mantine components, no
@@ -86,22 +108,33 @@ find them is to bisect the template. These are the ones found the hard way.
   There is no way to attach a hover effect or a click handler.
 - **`Tooltip` is stripped**, silently, while its child still renders.
 
-### Rejected outright
+### Loose equality is not loose
 
-Unlike the silent failures above, these raise a visible `RUNTIME_RENDER_ERROR`
-on the tile.
+`==` and `!=` are implemented as `String(left) === String(right)` in the build
+this widget was first deployed against, so **`undefined != null` is true**. A
+`value != null ? value : fallback` guard therefore takes the `value` branch when
+the value is missing, and the next method call on it fails with a visible
+`RUNTIME_RENDER_ERROR`: `Calling method 'trim' is not allowed`, naming whatever
+method happened to be next. The message points at the method; the bug is the
+comparison.
 
-- **`.trim()` is not allowed.** Confirmed 2026-09-25, as
-  `Calling method 'trim' is not allowed`, on an expression that had shipped and
-  looked fine in review. Trim with `.split(" ").filter((s)=>s!=="").join(" ")`
-  instead, which also collapses internal runs of spaces. The string methods this
-  widget does use without complaint are `split`, `join`, `toLowerCase`,
-  `includes` and `concat` via `+`.
-- **A blocked call is found at call time, not at paste time.** The workbench
-  saved the template without complaint. Nothing flags the expression until a
-  tile renders and reaches it, so a blocked method sitting on any branch ships
-  looking healthy. Place a copy with every option blank and a copy fully
-  configured before calling a template good.
+Newer builds special-case null on both sides and behave like JavaScript, which
+is why this reproduces on one Homarr and not another.
+
+- **Use `||` for a fallback, or `=== undefined` / `=== null` when an empty
+  string has to survive.** `===` and `!==` are real strict equality in every
+  build.
+- **`.trim()` itself is allowed**, along with `split`, `join`, `toLowerCase`,
+  `toUpperCase`, `includes`, `startsWith`, `endsWith`, `slice`, `substring`,
+  `replace`, `replaceAll`, `indexOf`, `padStart`, `padEnd`, `charAt`, `repeat`,
+  `match` and `search`. Every one of them raises that same
+  `Calling method 'x' is not allowed` when the receiver is `undefined` or an
+  array, so read the error as a wrong receiver before suspecting the method.
+- **A blocked or misdirected call is found at call time, not at paste time.**
+  The workbench saves the template without complaint. Place a copy with every
+  option blank and a copy fully configured before calling a template good, or
+  run `tools/sandbox-check.sh`, which renders the template against the real
+  interpreter.
 
 ### Things that are true but not obvious
 

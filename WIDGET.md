@@ -66,7 +66,8 @@ keyword as its own heading. Every existing board is therefore unaffected.
 Case and spaces are preserved in the label but stripped from the match key, so
 `home lab=Home Lab` matches the keyword `homelab` and displays `Home Lab`.
 Spaces around an entry are dropped, so `public = Alpha` and `public=Alpha` are
-the same thing. A run of spaces inside a label collapses to one.
+the same thing. An entry written `public=` with nothing after it falls back to
+the keyword rather than showing a blank heading.
 
 **Hide the headings entirely** with *Show category headings*. The gap between
 groups is kept, so categories stay visually separated instead of running into

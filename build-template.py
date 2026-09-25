@@ -17,10 +17,11 @@ IDX = '"' + ",".join(str(i) for i in range(N)) + '".split(",")'
 # Each entry is "keyword" or "keyword=Label". Split on "," first and "=" second,
 # so the label keeps its case and spaces while the match key stays normalised.
 #
-# The label is trimmed with split/filter/join because the sandbox rejects
-# .trim() outright: RUNTIME_RENDER_ERROR "Calling method 'trim' is not allowed".
-# This collapses runs of spaces as well as stripping the ends, which is fine
-# for a heading and is the only trim available.
+# The label falls back with || rather than a != null test. Older sandbox builds
+# implement == and != as String(left) === String(right), so undefined != null is
+# true and an entry with no "=" takes the undefined branch, which then raises
+# RUNTIME_RENDER_ERROR "Calling method 'trim' is not allowed" on undefined.
+# Only === and !== behave like JavaScript in every build. See ../README.md.
 # An entry with no "=" yields label == keyword, which is why every existing
 # board is unaffected.
 #
@@ -28,7 +29,7 @@ IDX = '"' + ",".join(str(i) for i in range(N)) + '".split(",")'
 # arrays independently would slide their indices apart, and _gi indexes both.
 K = ('(options.categories||"").split(",").map((e)=>e.split("="))'
      '.map((p)=>[(p[0]||"").toLowerCase().split(" ").join(""),'
-     '(p[1]!=null?p[1]:(p[0]||"")).split(" ").filter((s)=>s!=="").join(" ")])'
+     '(p[1]||p[0]||"").trim()])'
      '.filter((p)=>p[0]!=="")')
 
 PIPELINE = ('data.apps.filter((a)=>(a.description||"")!=="")'
@@ -58,7 +59,8 @@ BIND = ('[[r?((r.result&&r.result.data&&r.result.data.json'
         '&&Number(r.result.data.json.statusCode)<600)'
         '?Number(r.result.data.json.statusCode):-1):null,'
         'r&&r.result&&r.result.data&&r.result.data.json'
-        '&&r.result.data.json.durationMs!=null'
+        '&&r.result.data.json.durationMs!==undefined'
+        '&&r.result.data.json.durationMs!==null'
         '?Number(r.result.data.json.durationMs):-1]]')
 
 OK   = f'(({CODE}>=200&&{CODE}<400)||{CODE}===401||{CODE}===403)'
@@ -87,7 +89,7 @@ CODE_LINE = ('<Group gap={5} wrap="nowrap" '
              'justify={options.statusAlignRight?"flex-end":"flex-start"}>'
              f'{{options.showCodes===false||{CODE}===null?null:'
              f'(<Text size="9px" fw={{{CODE}===-1?700:400}} c={{{CODE_C}}}>'
-             f'{{{CODE}===-1?"DOWN":[options.codePrefix==null?"HTTP ":options.codePrefix,{CODE}].join("")}}</Text>)}}'
+             f'{{{CODE}===-1?"DOWN":[options.codePrefix===undefined||options.codePrefix===null?"HTTP ":options.codePrefix,{CODE}].join("")}}</Text>)}}'
              f'{{(options.showLatency!==false&&{CODE}>0&&{MS}>=0)'
              f'?(<Text size="9px" c={{{LAT_C}}}>'
              f'{{[String({MS}).split(".")[0]," ms"].join("")}}</Text>):null}}'
