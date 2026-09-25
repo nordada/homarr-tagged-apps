@@ -72,6 +72,11 @@ bash tools/sandbox-check.sh release/v2
 bash tools/sandbox-check.sh 3aa14e22
 ```
 
+Cases live in `sandbox-cases.json`. A case either names its apps or asks for a
+generated instance (`"generate": {"count": 250, "tagsEach": 3}`), and the
+generated ones are the point: four hand-written apps sit far inside every
+budget, and a real board does not.
+
 It fetches Homarr's `packages/custom-widgets` at that ref, bundles the real
 interpreter and renders `template.jsx` through it once per case, with the
 categories option blank, renamed, mixed and matching nothing. Any ref, branch or
@@ -170,6 +175,49 @@ is why this reproduces on one Homarr and not another.
 - **Removing an option key orphans the stored value** on every already-placed
   copy, which surfaces as a validation error on the board. Changing a key's
   *type* is safe; removing or renaming it is not.
+
+### Budget, and what actually spends it
+
+The collection budget is 4000 items and the operation budget 25,000, and a real
+board reaches both. What they cost:
+
+| Operation | Collection cost |
+| --- | --- |
+| `map`, `filter`, `flatMap`, `find`, `some`, `reduce` | 1 per item |
+| `join`, `includes`, `indexOf` on an array | the whole array's length |
+| `sort` | 1 per comparison, so n log n |
+| `split` and `match` on a string | 1 per part produced |
+| **every other string method** | **free** |
+
+That last row is the lever. This widget's picker went from failing at 100 apps
+to clearing 350 by moving work into strings:
+
+- **`.replaceAll(" ", "")` in place of `.split(" ").join("")`.** The split/join
+  pair charges twice per word, so one prose description cost six items instead
+  of none. This ran once per app, in both the picker and the grouping.
+- **Counting by splitting a delimited string** rather than
+  `keys.filter((x) => x === k).length` per category, which was unique x total
+  and on its own took a 189-app board down.
+- **Deduplicating through a string accumulator** in one `reduce`, rather than
+  `filter` plus `indexOf`, which is n squared because `indexOf` charges the
+  array's length every call.
+- **Sorting only when the list is short.** Sorting the full key list is n log n
+  at the moment the budget is already tight.
+
+Measured ceilings for this widget, from `tools/sandbox-check.sh`:
+
+| Board | Apps before it fails |
+| --- | --- |
+| 1 keyword per app | 556 |
+| 2 keywords per app | 353 |
+| 3 keywords per app | 259 |
+| every description a different sentence | 331 |
+| **apps shown in one widget's categories** | **94** |
+
+That last one is the operation budget rather than the collection budget, it is
+about rendering cards rather than about the picker, and it has been there from
+the start. One widget cannot show more than about 94 apps. Split them across
+two widgets by category.
 
 ### Resource limits
 

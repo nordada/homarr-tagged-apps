@@ -218,6 +218,11 @@ headers, different network path. Cloudflare in particular often refuses it.
 Check the app's `pingUrl` is reachable from the container before assuming the
 service is down.
 
+**The picker lists the categories alphabetically, until there are more than 60
+of them**, at which point it keeps board order instead. Past 60 the panel is
+telling you the descriptions are prose rather than keywords, and sorting that
+many is what pushes the widget over its budget.
+
 **The picker lists categories I have already used elsewhere.**
 A widget can only see the app list, never the board or other widgets, so it
 cannot know which are already placed.

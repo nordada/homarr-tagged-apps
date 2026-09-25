@@ -28,12 +28,12 @@ IDX = '"' + ",".join(str(i) for i in range(N)) + '".split(",")'
 # Pairs rather than two parallel arrays: filtering an empty entry out of two
 # arrays independently would slide their indices apart, and _gi indexes both.
 K = ('(options.categories||"").split(",").map((e)=>e.split("="))'
-     '.map((p)=>[(p[0]||"").toLowerCase().split(" ").join(""),'
+     '.map((p)=>[(p[0]||"").toLowerCase().replaceAll(" ",""),'
      '(p[1]||p[0]||"").trim()])'
      '.filter((p)=>p[0]!=="")')
 
 PIPELINE = ('data.apps.filter((a)=>(a.description||"")!=="")'
-            '.map((a)=>[(a.description||"").toLowerCase().split(" ").join("")]'
+            '.map((a)=>[(a.description||"").toLowerCase().replaceAll(" ","")]'
             '.map((d)=>({...a,_d:d,_gi:keys.length===0?0:'
             'keys.findIndex((k)=>(","+d+",").includes(","+k[0]+","))}))[0])'
             '.filter((a)=>a._gi>=0)'
@@ -123,12 +123,40 @@ HEAD = ('{(options.showCategoryHeader===false)?((i===0||list[i-1]._gi!==app._gi)
 
 SKEL = '<Paper withBorder radius={6} p="xs"><Skeleton height={24} radius="sm"/></Paper>'
 SEL  = "userSelect:'text',WebkitUserSelect:'text'"
-UNIQ = 'all.filter((v,i,arr)=>i===0||arr[i-1]!==v)'
+# The picker below runs on every tagged app on the instance, against a budget
+# of 4000 collection items, so its cost has to stay linear in that number.
+# Sorting the full key list is n log n, and counting each category by filtering
+# the whole list is unique x total, which is what took a 189-app board down.
+#
+# So: keep the keys unsorted, dedupe through a string accumulator, sort only
+# the handful of unique keys, and count by splitting a delimited string.
+# String work costs no collection budget; only split, match and the array
+# methods do.
+# Bound as the joined string rather than the array, because the counting bag
+# below is then free: doubling the commas is a string operation and string
+# operations cost no collection budget.
+ALLSTR = ('[data.apps.filter((a)=>(a.description||"")!=="")'
+          '.map((a)=>(a.description||"").toLowerCase().replaceAll(" ",""))'
+          '.join(",")]')
 
-ALL = ('[data.apps.filter((a)=>(a.description||"")!=="")'
-       '.map((a)=>(a.description||"").toLowerCase().split(" ").join(""))'
-       '.join(",").split(",").filter((k)=>k!=="")'
-       '.sort((a,b)=>a<b?-1:(a>b?1:0))]')
+ALL = 'str.split(",").filter((k)=>k!=="")'
+
+# ",,media,,arrs,,media,," every key delimited by its own pair of commas, so a
+# split on ",media," cannot straddle two entries, two adjacent copies of the
+# same key both count, and "media" cannot match inside "socialmedia".
+BAG = '(","+str.replaceAll(",",",,")+",")'
+
+# One pass, carrying the keys already seen as ",media,arrs,". String includes
+# is free, so this is 1 per key against the n squared of filter+indexOf.
+UNIQ = ('all.reduce((acc,k)=>acc.includes(","+k+",")?acc:acc+k+",",",")'
+        '.split(",").filter((k)=>k!=="")')
+
+# Alphabetical is worth a sort while the list is short. It is n log n, and on a
+# board where every app carries a different description the unique list is as
+# long as the key list, which is exactly when the budget is already tight. Past
+# 60 the panel is telling you the descriptions are prose rather than keywords,
+# and board order reads as well as alphabetical.
+SORTED = ('u0.length>60?u0:u0.sort((a,b)=>a<b?-1:(a>b?1:0))')
 
 # Shown only in the two unconfigured states below, which stop rendering the
 # moment `categories` is set. So a working board never carries this, and no
@@ -159,16 +187,16 @@ FOUND = ('<Stack gap={10}>'
          '<Text size="sm" c="dimmed" ta="center" style={{lineHeight:1.5}}>'
          'Copy the ones you want into the categories option, separated by commas, '
          'in the order you want the groups stacked.</Text>'
-         '<Group gap={6} justify="center">{' + UNIQ + '.map((k)=>('
+         '<Group gap={6} justify="center">{uniq.map((k)=>('
          '<Paper key={k} withBorder radius={999} style={{padding:\'3px 10px\',' + SEL + '}}>'
          '<Group gap={6} wrap="nowrap">'
          '<Text size="sm" fw={600}>{k}</Text>'
-         '<Text size="xs" c="dimmed">{all.filter((x)=>x===k).length}</Text>'
+         '<Text size="xs" c="dimmed">{' + BAG + '.split(","+k+",").length-1}</Text>'
          '</Group></Paper>))}</Group>'
          '<Text size="xs" c="dimmed" ta="center">All of them, ready to paste:</Text>'
          '<Paper withBorder radius={6} style={{padding:\'6px 10px\',' + SEL + '}}>'
          '<Text size="xs" ta="center" style={{lineHeight:1.6,wordBreak:\'break-word\'}}>{'
-         + UNIQ + '.join(", ")}</Text></Paper>'
+         'uniq.join(", ")}</Text></Paper>'
          '<Text size="xs" c="dimmed" ta="center" style={{lineHeight:1.5}}>'
          'The number is how many apps carry that category. A widget cannot see other '
          'widgets, so every category is listed, not just unused ones.</Text>'
@@ -176,7 +204,10 @@ FOUND = ('<Stack gap={10}>'
          '</Stack>')
 
 CATALOGUE = ('<Stack gap={10} p="xs" style={{' + SEL + ',cursor:\'text\'}}>'
-             '{' + ALL + '.map((all)=>all.length===0?(' + EMPTY + '):(' + FOUND + '))}'
+             '{' + ALLSTR + '.map((str)=>([' + ALL + '].map((all)=>'
+             'all.length===0?(' + EMPTY + '):'
+             '([' + UNIQ + '].map((u0)=>(['
+             + SORTED + '].map((uniq)=>(' + FOUND + '))[0]))[0]))[0]))}'
              '</Stack>')
 
 SUB = ('{options.showStatus&&i<(Number(options.statusLimit)||24)'

@@ -1,0 +1,137 @@
+{
+  "apps": [
+    {
+      "id": "a1",
+      "name": "Sonarr",
+      "href": "http://host/1",
+      "description": "media, admin",
+      "iconUrl": "/icon/1.png"
+    },
+    {
+      "id": "a2",
+      "name": "Grafana",
+      "href": "http://host/2",
+      "description": "system",
+      "iconUrl": "/icon/2.png"
+    },
+    {
+      "id": "a3",
+      "name": "Plex",
+      "href": "http://host/3",
+      "description": "media",
+      "iconUrl": "/icon/3.png"
+    },
+    {
+      "id": "a4",
+      "name": "Untagged",
+      "href": "http://host/4",
+      "description": "",
+      "iconUrl": ""
+    }
+  ],
+  "cases": [
+    {
+      "label": "no categories, apps tagged",
+      "options": {}
+    },
+    {
+      "label": "no categories, nothing tagged",
+      "options": {},
+      "apps": []
+    },
+    {
+      "label": "plain keywords",
+      "options": {
+        "categories": "media, system"
+      }
+    },
+    {
+      "label": "renamed headings",
+      "options": {
+        "categories": "media=Alpha, system=Bravo"
+      }
+    },
+    {
+      "label": "one renamed, one not",
+      "options": {
+        "categories": "media, system=Bravo"
+      }
+    },
+    {
+      "label": "spaces around the entry",
+      "options": {
+        "categories": " media = My Media "
+      }
+    },
+    {
+      "label": "keyword with a trailing =",
+      "options": {
+        "categories": "media="
+      }
+    },
+    {
+      "label": "headings hidden",
+      "options": {
+        "categories": "media, system",
+        "showCategoryHeader": false
+      }
+    },
+    {
+      "label": "headings not uppercased",
+      "options": {
+        "categories": "media",
+        "headerUppercase": false
+      }
+    },
+    {
+      "label": "keyword that matches nothing",
+      "options": {
+        "categories": "nosuchtag"
+      }
+    },
+    {
+      "label": "200 apps, picker",
+      "options": {},
+      "generate": {
+        "count": 200,
+        "tagsEach": 2
+      }
+    },
+    {
+      "label": "200 apps, prose descriptions",
+      "options": {},
+      "generate": {
+        "count": 200,
+        "uniqueDescriptions": true
+      }
+    },
+    {
+      "label": "250 apps, 3 tags each",
+      "options": {},
+      "generate": {
+        "count": 250,
+        "tagsEach": 3
+      }
+    },
+    {
+      "label": "200 apps, one category shown",
+      "options": {
+        "categories": "media"
+      },
+      "generate": {
+        "count": 200,
+        "tagsEach": 2
+      }
+    },
+    {
+      "label": "90 cards, near the ceiling",
+      "options": {
+        "categories": "media"
+      },
+      "generate": {
+        "count": 90,
+        "tagsEach": 1
+      }
+    }
+  ]
+}

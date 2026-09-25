@@ -14,7 +14,9 @@
 set -euo pipefail
 
 REF="${1:-release/v2}"
+WIDGET="."
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+WIDGET="$(cd "$WIDGET" && pwd)"
 WORK="$ROOT/.sandbox-check/$(echo "$REF" | tr '/' '_')"
 SRC="$WORK/src"
 
@@ -69,5 +71,5 @@ npx --yes esbuild entry.ts --bundle --format=cjs --platform=node \
   '--external:@mantine/*' '--external:@tabler/*' --external:jsonpath-plus \
   --alias:zod/v4=zod --outfile=bundle.cjs --log-level=error
 
-echo "ref $REF"
-NODE_PATH="$WORK/node_modules" node "$ROOT/tools/sandbox-check.cjs" "$WORK/bundle.cjs" "$ROOT/template.jsx" "$ROOT/options.json"
+echo "$(basename "$WIDGET") at $REF"
+NODE_PATH="$WORK/node_modules" node "$ROOT/tools/sandbox-check.cjs" "$WORK/bundle.cjs" "$WIDGET/template.jsx" "$WIDGET/options.json" "$WIDGET/sandbox-cases.json"

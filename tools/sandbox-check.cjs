@@ -1,21 +1,42 @@
-// Renders template.jsx through Homarr's interpreter once per case below and
-// reports the rendered text. Called by sandbox-check.sh, which builds the
-// bundle for a given Homarr ref.
+// Renders a widget's template.jsx through Homarr's interpreter once per case in
+// its sandbox-cases.json and reports the rendered text. Called by
+// sandbox-check.sh, which builds the bundle for a given Homarr ref.
 //
 // A case that renders nothing is not necessarily healthy: silent failures are
 // how most sandbox violations show up. Read the text, do not just count OKs.
-//
-// Only headings and the two empty states show up as text. The app cards live
-// inside a SubFetch children function, which the component stubs cannot call,
-// so this checks the grouping and the option handling, not the card layout.
+// Anything inside a SubFetch children function stays unrendered here, because
+// the component stubs cannot call it.
 const React = require("react");
 const fs = require("fs");
 
-const [bundlePath, templatePath, optionsPath] = process.argv.slice(2);
+const [bundlePath, templatePath, optionsPath, casesPath] = process.argv.slice(2);
 const { renderSafeJsx, createCustomJsxBindings } = require(bundlePath);
 const template = fs.readFileSync(templatePath, "utf8");
 const optionDefs = JSON.parse(fs.readFileSync(optionsPath, "utf8"));
 const defaults = Object.fromEntries(Object.entries(optionDefs).map(([key, option]) => [key, option.default]));
+const caseFile = JSON.parse(fs.readFileSync(casesPath, "utf8"));
+const apps = caseFile.apps ?? [];
+
+// A case can name its apps outright, or ask for a synthetic instance. The
+// generated form is what catches the budget ceilings: four hand-written apps
+// stay far inside every limit, and a real board does not.
+const TAGS = ["media", "admin", "system", "arrs", "tools", "docs", "net", "home", "game", "photo"];
+const generate = ({ count, tagsEach = 1, uniqueDescriptions = false }) =>
+  Array.from({ length: count }, (_, index) => ({
+    id: `generated-${index}`,
+    name: `App ${index}`,
+    href: `http://host.invalid/${index}`,
+    description: uniqueDescriptions
+      ? `a distinct sentence describing app number ${index}`
+      : Array.from({ length: tagsEach }, (_, offset) => TAGS[(index + offset) % TAGS.length]).join(", "),
+    iconUrl: `/icon/${index}.png`,
+  }));
+
+const cases = caseFile.cases.map((entry) => [
+  entry.label,
+  entry.options ?? {},
+  entry.generate ? generate(entry.generate) : (entry.apps ?? apps),
+]);
 
 // Every component resolves, so a case fails on the expression, not on a name.
 const components = new Proxy(
@@ -31,26 +52,6 @@ const components = new Proxy(
     has: () => true,
   },
 );
-
-const apps = [
-  { id: "a1", name: "Sonarr", href: "http://host/1", description: "media, admin", iconUrl: "/icon/1.png" },
-  { id: "a2", name: "Grafana", href: "http://host/2", description: "system", iconUrl: "/icon/2.png" },
-  { id: "a3", name: "Plex", href: "http://host/3", description: "media", iconUrl: "/icon/3.png" },
-  { id: "a4", name: "Untagged", href: "http://host/4", description: "", iconUrl: "" },
-];
-
-const cases = [
-  ["no categories, apps tagged", {}, apps],
-  ["no categories, nothing tagged", {}, []],
-  ["plain keywords", { categories: "media, system" }, apps],
-  ["renamed headings", { categories: "media=Alpha, system=Bravo" }, apps],
-  ["one renamed, one not", { categories: "media, system=Bravo" }, apps],
-  ["spaces around the entry", { categories: " media = My Media " }, apps],
-  ["keyword with a trailing =", { categories: "media=" }, apps],
-  ["headings hidden", { categories: "media, system", showCategoryHeader: false }, apps],
-  ["headings not uppercased", { categories: "media", headerUppercase: false }, apps],
-  ["keyword that matches nothing", { categories: "nosuchtag" }, apps],
-];
 
 let failed = 0;
 for (const [label, options, data] of cases) {
