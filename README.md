@@ -69,7 +69,7 @@ survives the interpreter, because that depends on the Homarr build. This does:
 
 ```bash
 bash tools/sandbox-check.sh release/v2
-bash tools/sandbox-check.sh 83e3b22f
+bash tools/sandbox-check.sh 3aa14e22
 ```
 
 It fetches Homarr's `packages/custom-widgets` at that ref, bundles the real
@@ -78,9 +78,16 @@ categories option blank, renamed, mixed and matching nothing. Any ref, branch or
 commit that carries the package works.
 
 Two refs rather than one, because the sandbox is not one fixed set of rules. The
-`.trim()` failure below rendered fine on the current source and failed on the
-build it was deployed to, and checking only the newer one would have said the
-template was healthy.
+equality failure below renders fine on current source and fails on the build it
+was deployed to, and checking only the newer one would have said the template
+was healthy.
+
+`3aa14e22` is 2026-07-22, the first ref with the full component catalog, and it
+still has the string-comparison equality that `47f6c1cc` fixed on 2026-09-24.
+Anything released between those two dates behaves like it. Do not reach further
+back than that for the old side: `83e3b22f` predates the catalog and silently
+drops props that every shipped build accepts, `Anchor.href` among them, so it
+reports failures that are not real.
 
 Needs node, npx and network. Everything lands in `.sandbox-check/`, gitignored.
 
