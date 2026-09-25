@@ -16,6 +16,11 @@ IDX = '"' + ",".join(str(i) for i in range(N)) + '".split(",")'
 
 # Each entry is "keyword" or "keyword=Label". Split on "," first and "=" second,
 # so the label keeps its case and spaces while the match key stays normalised.
+#
+# The label is trimmed with split/filter/join because the sandbox rejects
+# .trim() outright: RUNTIME_RENDER_ERROR "Calling method 'trim' is not allowed".
+# This collapses runs of spaces as well as stripping the ends, which is fine
+# for a heading and is the only trim available.
 # An entry with no "=" yields label == keyword, which is why every existing
 # board is unaffected.
 #
@@ -23,7 +28,7 @@ IDX = '"' + ",".join(str(i) for i in range(N)) + '".split(",")'
 # arrays independently would slide their indices apart, and _gi indexes both.
 K = ('(options.categories||"").split(",").map((e)=>e.split("="))'
      '.map((p)=>[(p[0]||"").toLowerCase().split(" ").join(""),'
-     '(p[1]!=null?p[1]:(p[0]||"")).trim()])'
+     '(p[1]!=null?p[1]:(p[0]||"")).split(" ").filter((s)=>s!=="").join(" ")])'
      '.filter((p)=>p[0]!=="")')
 
 PIPELINE = ('data.apps.filter((a)=>(a.description||"")!=="")'

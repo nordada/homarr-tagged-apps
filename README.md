@@ -86,6 +86,23 @@ find them is to bisect the template. These are the ones found the hard way.
   There is no way to attach a hover effect or a click handler.
 - **`Tooltip` is stripped**, silently, while its child still renders.
 
+### Rejected outright
+
+Unlike the silent failures above, these raise a visible `RUNTIME_RENDER_ERROR`
+on the tile.
+
+- **`.trim()` is not allowed.** Confirmed 2026-09-25, as
+  `Calling method 'trim' is not allowed`, on an expression that had shipped and
+  looked fine in review. Trim with `.split(" ").filter((s)=>s!=="").join(" ")`
+  instead, which also collapses internal runs of spaces. The string methods this
+  widget does use without complaint are `split`, `join`, `toLowerCase`,
+  `includes` and `concat` via `+`.
+- **A blocked call is found at call time, not at paste time.** The workbench
+  saved the template without complaint. Nothing flags the expression until a
+  tile renders and reaches it, so a blocked method sitting on any branch ships
+  looking healthy. Place a copy with every option blank and a copy fully
+  configured before calling a template good.
+
 ### Things that are true but not obvious
 
 - **`SubFetch` results never appear in `data` or `status`.** They reach only the
