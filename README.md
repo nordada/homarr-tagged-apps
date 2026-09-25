@@ -157,6 +157,16 @@ is why this reproduces on one Homarr and not another.
 - **Boards set `user-select: none`** so tiles can be dragged, which kills text
   selection. An inline `style={{userSelect:'text'}}` overrides it, and works in
   view mode only.
+
+### Options
+
+- **A `select` stores a string, even when the choice looks numeric.** The
+  option validator requires a string for every control outside `number`,
+  `slider`, `duration`, `switch`, `multiSelect` and `json`, and it runs against
+  the declared `default` as well as stored values, so a numeric choice is
+  refused on save with `options.<name>.default Expected text`. The settings
+  form coerces a numeric choice back to a number, which is what makes this look
+  supported. Declare the numbers as text and convert them in the template.
 - **Removing an option key orphans the stored value** on every already-placed
   copy, which surfaces as a validation error on the board. Changing a key's
   *type* is safe; removing or renaming it is not.
