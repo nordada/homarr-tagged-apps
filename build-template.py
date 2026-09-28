@@ -98,13 +98,20 @@ LAT_C = (f'({MS}>=Number(options.latencyBadMs||1000)&&Number(options.latencyBadM
          f'?(options.latencyWarnColor||"blue.4")'
          f':(options.latencyColor||"gray.6"))')
 
+# The status line is sized in em for the same reason as the new-tab glyph: a
+# px value is a real pixel and does not pass through
+# calc(px * var(--mantine-scale)), so on a board with the UI scale above 1 it
+# stayed at 9px while the name beside it grew. 0.5625em is 9px against the
+# 16px base, so a board at scale 1 looks exactly as it did before and every
+# other scale now keeps the same proportion to the name, which is `xs`, or
+# 0.75em by the same measure.
 CODE_LINE = ('<Group gap={5} wrap="nowrap" '
              'justify={options.statusAlignRight?"flex-end":"flex-start"}>'
              f'{{options.showCodes===false||{CODE}===null?null:'
-             f'(<Text size="9px" fw={{{CODE}===-1?700:400}} c={{{CODE_C}}}>'
+             f'(<Text size="0.5625em" fw={{{CODE}===-1?700:400}} c={{{CODE_C}}}>'
              f'{{{CODE}===-1?"DOWN":[options.codePrefix===undefined||options.codePrefix===null?"HTTP ":options.codePrefix,{CODE}].join("")}}</Text>)}}'
              f'{{(options.showLatency!==false&&{CODE}>0&&{MS}>=0)'
-             f'?(<Text size="9px" c={{{LAT_C}}}>'
+             f'?(<Text size="0.5625em" c={{{LAT_C}}}>'
              f'{{[String({MS}).split(".")[0]," ms"].join("")}}</Text>):null}}'
              '</Group>')
 
