@@ -124,13 +124,80 @@
       }
     },
     {
-      "label": "90 cards, near the ceiling",
+      "label": "84 cards, just under the ceiling",
       "options": {
         "categories": "media"
       },
       "generate": {
-        "count": 90,
-        "tagsEach": 1
+        "count": 84,
+        "sameTag": "media"
+      }
+    },
+    {
+      "label": "view only, no click",
+      "options": {
+        "categories": "media, system",
+        "clickToOpen": false
+      }
+    },
+    {
+      "label": "view only, dots still on",
+      "options": {
+        "categories": "media",
+        "clickToOpen": false,
+        "showStatus": true
+      }
+    },
+    {
+      "label": "same tab",
+      "options": {
+        "categories": "media, system",
+        "openInNewTab": false
+      }
+    },
+    {
+      "label": "new tab icon on",
+      "options": {
+        "categories": "media, system",
+        "showNewTabIcon": true
+      }
+    },
+    {
+      "label": "new tab icon, inert in same tab",
+      "options": {
+        "categories": "media",
+        "openInNewTab": false,
+        "showNewTabIcon": true
+      }
+    },
+    {
+      "label": "new tab icon, inert when not clickable",
+      "options": {
+        "categories": "media",
+        "clickToOpen": false,
+        "showNewTabIcon": true
+      }
+    },
+    {
+      "label": "89 cards, view only, just under its ceiling",
+      "generate": {
+        "count": 89,
+        "sameTag": "media"
+      },
+      "options": {
+        "categories": "media",
+        "clickToOpen": false
+      }
+    },
+    {
+      "label": "83 cards, new tab icon, just under its ceiling",
+      "generate": {
+        "count": 83,
+        "sameTag": "media"
+      },
+      "options": {
+        "categories": "media",
+        "showNewTabIcon": true
       }
     }
   ]

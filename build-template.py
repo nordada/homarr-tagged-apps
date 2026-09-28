@@ -46,8 +46,21 @@ QEXPR = ('[\'{\',' + IDX +
          '.map((s,n)=>[\'"\',n,\'":{"json":{"id":"\',(arr[n]||arr[0]).id,\'"}}\'].join(""))'
          '.join(\',\'),\'}\'].join("")')
 
+# The link options are read once per render and hung on each app beside _q,
+# for the same reason _q is: every one of them is identical for every card, and
+# the card path is what the 25,000 operation budget actually counts. Reading
+# options.* inside the card instead measured 8 cards off the ceiling, 94 down
+# to 86, before this was hoisted. One array binding rather than three nested
+# ones, because each binding also costs AST depth against a ceiling of 64.
+#   _cl clickable, _tg anchor target, _ic show the new-tab glyph
+LINKFLAGS = ('[' + QEXPR + ',options.clickToOpen!==false'
+             ',options.openInNewTab===false?"_self":"_blank"'
+             ',options.showNewTabIcon===true&&options.clickToOpen!==false'
+             '&&options.openInNewTab!==false]')
+
 LIST = ('[[' + K + '].map((keys)=>[' + PIPELINE + '].map((arr)=>['
-        + QEXPR + '].map((q)=>arr.map((a)=>({...a,_q:q})))[0])[0])[0]]')
+        + LINKFLAGS + '].map((b)=>arr.map((a)=>'
+        '({...a,_q:b[0],_cl:b[1],_tg:b[2],_ic:b[3]})))[0])[0])[0]]')
 
 # One binding holding [code, latencyMs]. code: a real 1xx-5xx, or -1 for down,
 # or null for a slot that was never filled. ms: -1 when unknown. Binding the
@@ -96,6 +109,22 @@ CODE_LINE = ('<Group gap={5} wrap="nowrap" '
              '</Group>')
 
 NAME = '<Text fw={700} size="xs" lineClamp={1}>{app.name}</Text>'
+# Only the dot variant wraps the name in a flex:1 Stack. Without a dot the name
+# is the sole child, so it has to carry the flex itself, otherwise the new-tab
+# glyph sits against the name rather than at the card's right edge.
+NAME_WIDE = '<Text fw={700} size="xs" lineClamp={1} flex={1} miw={0}>{app.name}</Text>'
+
+# Homarr cannot hide one option based on another: the option schema is a
+# strictObject of label/description/control/default/choices/choicesFrom/min/
+# max/step/advanced/group and nothing else, so an unknown key fails validation
+# rather than being ignored. The dependency is enforced here instead, and
+# stated in the option's own description.
+#
+# opacity rather than a colour: TablerIcon is a host adapter, so how it maps a
+# Mantine colour name onto an SVG stroke is not visible from the catalogue,
+# while opacity dims whatever it renders and reads in both themes.
+LINK_ICON = ('{app._ic?(<TablerIcon name="external-link" size={12} '
+             'opacity={0.55}/>):null}')
 
 
 def card(dot):
@@ -104,12 +133,15 @@ def card(dot):
              'style={{borderColor:options.highlightDown&&'
              f'{CODE}===-1?"var(--mantine-color-red-6)":undefined}}}}>'
              ) if dot else '<Paper withBorder radius={6} p="xs">'
-    body = (('<Stack gap={2} style={{minWidth:0,flex:1}}>' + NAME + CODE_LINE + '</Stack>')
-            if dot else NAME)
-    return ('<Anchor href={app.href} target="_blank" '
-            'underline={options.hoverUnderline===false?"never":"hover"} c="inherit">' + paper +
-            '<Group wrap="nowrap" gap="xs" justify="start">' + (DOT if dot else PLAIN_ICON) +
-            body + '</Group></Paper></Anchor>')
+    body = (('<Stack gap={2} flex={1} miw={0}>' + NAME + CODE_LINE + '</Stack>')
+            if dot else NAME_WIDE)
+    # No Anchor here. The link wraps the whole card once, in SUB below, rather
+    # than once per card variant: card() is emitted three times per app
+    # (triggerContent, fallback, and the resolved child), so a conditional
+    # Anchor inside it put that choice on the deep path three times over and
+    # measured 6 cards off the 25,000 operation ceiling, 94 down to 88.
+    return (paper + '<Group wrap="nowrap" gap="xs" justify="start">'
+            + (DOT if dot else PLAIN_ICON) + body + LINK_ICON + '</Group></Paper>')
 
 
 # The group gap is kept when the header is hidden, otherwise categories run
@@ -210,13 +242,24 @@ CATALOGUE = ('<Stack gap={10} p="xs" style={{' + SEL + ',cursor:\'text\'}}>'
              + SORTED + '].map((uniq)=>(' + FOUND + '))[0]))[0]))[0]))}'
              '</Stack>')
 
-SUB = ('{options.showStatus&&i<(Number(options.statusLimit)||24)'
-       '?(<SubFetch key={app.id} requestId="pings" params={{q:app._q}} trigger="auto" '
-       'triggerAriaLabel={"Check "+app.name} loadingLabel="Checking" '
-       'fallback={' + SKEL + '} triggerContent={' + card(False) + '}>'
-       '{(res)=>[(res||[])[i]].map((r)=>' + BIND + '.map((v)=>(' + card(True) + ')))}'
-       '</SubFetch>)'
-       ':' + card(False) + '}')
+_SUB_BODY = ('(options.showStatus&&i<(Number(options.statusLimit)||24)'
+             '?(<SubFetch key={app.id} requestId="pings" params={{q:app._q}} trigger="auto" '
+             'triggerAriaLabel={"Check "+app.name} loadingLabel="Checking" '
+             'fallback={' + SKEL + '} triggerContent={' + card(False) + '}>'
+             '{(res)=>[(res||[])[i]].map((r)=>' + BIND + '.map((v)=>(' + card(True) + ')))}'
+             '</SubFetch>)'
+             ':' + card(False) + ')')
+
+# One decision per app rather than per card variant. The branch not taken is
+# never evaluated, so emitting the body twice costs template length, which has
+# 50,000 characters of headroom, and not operations, which do not.
+#
+# Anchor outside SubFetch also means the whole card area is the link while the
+# skeleton is showing, rather than only after the ping resolves. trigger="auto"
+# fires on mount, not on click, so wrapping it in a link does not double-fire.
+SUB = ('{app._cl?(<Anchor href={app.href} target={app._tg} '
+       'underline={options.hoverUnderline===false?"never":"hover"} c="inherit" '
+       'display="block">{' + _SUB_BODY + '}</Anchor>):' + _SUB_BODY + '}')
 
 tpl = (
 '<Stack gap={8} px="sm" pb="sm" style={{width:\'100%\',maxHeight:\'100%\','
@@ -260,7 +303,15 @@ for c in tpl:
 sub = [l for l in tpl.split("\n") if "<SubFetch" in l]
 print(f"template.jsx: {len(tpl)} chars  balance: {d} -> "
       + ("OK" if all(v == 0 for v in d.values()) else "BAD"))
-print("SubFetch on one line:", len(sub) == 1 and "</SubFetch>" in sub[0])
+# The rule is that each SubFetch element is unbroken on a single line, not that
+# there is only one of them. The card is emitted twice, inside the link and
+# without it, and only the branch that is taken ever renders. Counting opens
+# against closes per line is what catches a split element, which renders
+# nothing at all and gives no error.
+_opens = sum(l.count("<SubFetch") for l in sub)
+_closes = sum(l.count("</SubFetch>") for l in sub)
+print(f"SubFetch: {_opens} element(s), each unbroken on one line: "
+      f"{_opens == _closes and all(l.count('<SubFetch') == l.count('</SubFetch>') for l in sub)}")
 
 # Schema limits on each option, from packages/custom-widgets/src/core/
 # options-schema.ts: description max 512, label max 128. These are per option

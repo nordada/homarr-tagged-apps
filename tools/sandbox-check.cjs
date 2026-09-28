@@ -21,14 +21,19 @@ const apps = caseFile.apps ?? [];
 // generated form is what catches the budget ceilings: four hand-written apps
 // stay far inside every limit, and a real board does not.
 const TAGS = ["media", "admin", "system", "arrs", "tools", "docs", "net", "home", "game", "photo"];
-const generate = ({ count, tagsEach = 1, uniqueDescriptions = false }) =>
+// sameTag puts every generated app in one category, which is the only way to
+// drive the card count directly: with tagsEach the tags cycle through TAGS, so
+// a count of 90 yields 9 cards in any one category, not 90.
+const generate = ({ count, tagsEach = 1, uniqueDescriptions = false, sameTag = null }) =>
   Array.from({ length: count }, (_, index) => ({
     id: `generated-${index}`,
     name: `App ${index}`,
     href: `http://host.invalid/${index}`,
-    description: uniqueDescriptions
-      ? `a distinct sentence describing app number ${index}`
-      : Array.from({ length: tagsEach }, (_, offset) => TAGS[(index + offset) % TAGS.length]).join(", "),
+    description: sameTag
+      ? sameTag
+      : uniqueDescriptions
+        ? `a distinct sentence describing app number ${index}`
+        : Array.from({ length: tagsEach }, (_, offset) => TAGS[(index + offset) % TAGS.length]).join(", "),
     iconUrl: `/icon/${index}.png`,
   }));
 

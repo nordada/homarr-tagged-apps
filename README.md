@@ -212,12 +212,29 @@ Measured ceilings for this widget, from `tools/sandbox-check.sh`:
 | 2 keywords per app | 353 |
 | 3 keywords per app | 259 |
 | every description a different sentence | 331 |
-| **apps shown in one widget's categories** | **94** |
+| **apps shown in one widget's categories** | **85** |
 
 That last one is the operation budget rather than the collection budget, it is
 about rendering cards rather than about the picker, and it has been there from
-the start. One widget cannot show more than about 94 apps. Split them across
-two widgets by category.
+the start. Split a bigger category across two widgets.
+
+It moves with the link options, measured rather than estimated:
+
+| Card | Ceiling |
+| --- | --- |
+| before the link options existed | 94 |
+| default: clickable, new tab, no glyph | 85 |
+| **Cards open the app** off | 90 |
+| **Mark links that open a new tab** on | 84 |
+
+Nine cards of headroom went on making the link optional, and only one of those
+is the glyph. The cost is the choice itself: the card is emitted three times per
+app, as the trigger content, the fallback and the resolved child, and JSX
+attribute values are evaluated when the element is built rather than when it is
+shown. Hoisting the option reads onto each app beside `_q`, and moving the
+`Anchor` out to wrap the whole `SubFetch` once instead of each card variant,
+both helped less than expected: 86 and 85 against 84 for reading the options
+inline. That is why the hoisted form shipped, not because it was free.
 
 ### Resource limits
 

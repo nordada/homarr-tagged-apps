@@ -112,10 +112,24 @@ governs.
 | `latencyBadColor` | text | `yellow.6` | Used at or above the bad threshold. |
 | `statusAlignRight` | switch | off | Push the code and latency to the right edge. They move together. |
 | `hoverUnderline` | switch | on | Underline the name on hover. |
+| **`clickToOpen`** | switch | on | **Cards are links to the app.** Off makes the widget read-only: no link, no pointer, no underline. |
+| `openInNewTab` | switch | on | Open in a new tab. Off replaces the board in the current tab. |
+| `showNewTabIcon` | switch | off | Small faded arrow at the card's right edge marking a link that leaves the page. |
 | `scrollWhenTall` | switch | on | Scrollbar when the list is taller than the tile. |
 
 Everything from `statusLimit` down to `statusAlignRight` needs `showStatus` on, and
 `headerUppercase` only does anything while `showCategoryHeader` is on.
+`openInNewTab` needs `clickToOpen`, and `showNewTabIcon` needs both.
+
+**Homarr cannot grey out an option that depends on another.** The option schema
+is a strict object of label, description, control, default, choices,
+choicesFrom, min, max, step, advanced and group, with no way to express a
+dependency, and an invented key fails validation rather than being ignored. So
+every option is always shown and a dependent one simply does nothing, which is
+also how `statusLimit` and the colours behave when `showStatus` is off.
+
+Turning `clickToOpen` off costs about 5 cards of the render ceiling back, and
+`showNewTabIcon` costs 1. See the ceiling table in the README.
 
 ### Colouring by value
 

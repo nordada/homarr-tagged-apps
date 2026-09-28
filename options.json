@@ -113,6 +113,24 @@
     "control": "switch",
     "default": true
   },
+  "clickToOpen": {
+    "label": "Cards open the app",
+    "description": "On, each card is a link to the app. Off makes this a read-only list: no link, no pointer cursor, no hover underline, so the widget shows what you run without anyone being able to click through. Turning this off also makes the two options below do nothing.",
+    "control": "switch",
+    "default": true
+  },
+  "openInNewTab": {
+    "label": "Open in a new tab",
+    "description": "On, a card opens the app in a new browser tab and leaves your board where it is. Off replaces the board in the current tab, so you come back with the browser's back button. Needs Cards open the app to be on.",
+    "control": "switch",
+    "default": true
+  },
+  "showNewTabIcon": {
+    "label": "Mark links that open a new tab",
+    "description": "Put a small faded arrow at the right edge of every card, the usual sign that a link leaves the page. Costs one element per card, which counts against the render budget on a long list. Needs both options above to be on, and does nothing otherwise.",
+    "control": "switch",
+    "default": false
+  },
   "scrollWhenTall": {
     "label": "Scroll when the list is too tall",
     "description": "Show a scrollbar if the apps do not fit the tile. Off clips instead, which is tidier on a tile you have already sized to fit, but hides anything past the bottom edge.",
