@@ -120,11 +120,15 @@ NAME_WIDE = '<Text fw={700} size="xs" lineClamp={1} flex={1} miw={0}>{app.name}<
 # rather than being ignored. The dependency is enforced here instead, and
 # stated in the option's own description.
 #
-# opacity rather than a colour: TablerIcon is a host adapter, so how it maps a
-# Mantine colour name onto an SVG stroke is not visible from the catalogue,
-# while opacity dims whatever it renders and reads in both themes.
-LINK_ICON = ('{app._ic?(<TablerIcon name="external-link" size={15} '
-             'opacity={0.6}/>):null}')
+# size, colour and stroke only. `SafeTablerIcon` in
+# packages/widgets/src/custom-api/jsx-icon-adapter.tsx rebuilds the props from
+# an allowlist of exactly those three, so `opacity`, `ml`, `style` and every
+# other prop are silently dropped: they pass the analyser and then never reach
+# the SVG. A mid grey rather than a Mantine token, since the adapter hands the
+# value straight to the icon as a CSS colour and reads correctly on a light or
+# a dark card. Thinner stroke to keep an 18px glyph from shouting.
+LINK_ICON = ('{app._ic?(<TablerIcon name="external-link" size={18} '
+             'stroke={1.75} color="#909296"/>):null}')
 
 
 def card(dot):

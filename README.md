@@ -163,6 +163,24 @@ is why this reproduces on one Homarr and not another.
   selection. An inline `style={{userSelect:'text'}}` overrides it, and works in
   view mode only.
 
+### TablerIcon takes three props and drops the rest
+
+`SafeTablerIcon`, in `packages/widgets/src/custom-api/jsx-icon-adapter.tsx`,
+rebuilds the props from an allowlist before creating the element:
+
+```js
+if (isValidIconProp(props.size)) iconProps.size = props.size;
+if (typeof props.color === "string") iconProps.color = props.color;
+if (isValidIconProp(props.stroke)) iconProps.stroke = props.stroke;
+return createElement(IconComponent, iconProps);
+```
+
+So **`size`, `color` and `stroke` are the only props that reach the icon**.
+`opacity`, `ml`, `style` and every other global prop pass the analyser, render
+without an error, and then do nothing, which is a slow thing to notice because
+the icon still appears. Dim it with `color`, not with `opacity`. An unknown
+`name` renders `null` rather than failing, so a typo is silent too.
+
 ### Options
 
 - **A `select` stores a string, even when the choice looks numeric.** The
