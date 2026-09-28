@@ -126,8 +126,15 @@ NAME_WIDE = '<Text fw={700} size="xs" lineClamp={1} flex={1} miw={0}>{app.name}<
 # other prop are silently dropped: they pass the analyser and then never reach
 # the SVG. A mid grey rather than a Mantine token, since the adapter hands the
 # value straight to the icon as a CSS colour and reads correctly on a light or
-# a dark card. Thinner stroke to keep an 18px glyph from shouting.
-LINK_ICON = ('{app._ic?(<TablerIcon name="external-link" size={18} '
+# a dark card.
+#
+# The size is in em, not pixels, because the adapter hands `size` to the SVG as
+# a raw width and height while everything Mantine renders goes through
+# calc(px * var(--mantine-scale)). On a board with the UI scale above 1 a fixed
+# 18 stayed 18 real pixels while the name beside it grew, so the glyph shrank
+# relative to the card as the scale went up. An em tracks the inherited, already
+# scaled font size instead.
+LINK_ICON = ('{app._ic?(<TablerIcon name="external-link" size="0.85em" '
              'stroke={1.75} color="#909296"/>):null}')
 
 

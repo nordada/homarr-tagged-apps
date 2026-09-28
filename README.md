@@ -176,6 +176,14 @@ return createElement(IconComponent, iconProps);
 ```
 
 So **`size`, `color` and `stroke` are the only props that reach the icon**.
+
+`size` is handed to the SVG as a raw width and height, while everything Mantine
+renders goes through `calc(px * var(--mantine-scale))`. On a board with the UI
+scale above 1 that difference is visible: a fixed `size={18}` stays 18 real
+pixels while the text beside it grows, so the icon looks smaller the further
+the scale goes up. Give `size` an em value and it tracks the inherited, already
+scaled font size. The same trap applies to any hardcoded pixel size in a
+template, including `size="9px"` on a `Text`.
 `opacity`, `ml`, `style` and every other global prop pass the analyser, render
 without an error, and then do nothing, which is a slow thing to notice because
 the icon still appears. Dim it with `color`, not with `opacity`. An unknown
