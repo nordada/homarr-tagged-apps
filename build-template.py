@@ -123,8 +123,8 @@ NAME_WIDE = '<Text fw={700} size="xs" lineClamp={1} flex={1} miw={0}>{app.name}<
 # opacity rather than a colour: TablerIcon is a host adapter, so how it maps a
 # Mantine colour name onto an SVG stroke is not visible from the catalogue,
 # while opacity dims whatever it renders and reads in both themes.
-LINK_ICON = ('{app._ic?(<TablerIcon name="external-link" size={12} '
-             'opacity={0.55}/>):null}')
+LINK_ICON = ('{app._ic?(<TablerIcon name="external-link" size={15} '
+             'opacity={0.6}/>):null}')
 
 
 def card(dot):
