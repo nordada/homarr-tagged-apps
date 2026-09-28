@@ -163,6 +163,19 @@ is why this reproduces on one Homarr and not another.
   selection. An inline `style={{userSelect:'text'}}` overrides it, and works in
   view mode only.
 
+### An em is only as stable as what it inherits from
+
+Sizing in em fixes the UI-scale problem but introduces a subtler one: the basis
+is whatever the parent's font size happens to be, and the parent is not always
+the same element. A card with an href is wrapped in an `Anchor`, which is a
+`Text` underneath and carries its own font size; a card without one is not
+wrapped at all. The same `size="0.5625em"` then rendered at two visibly
+different sizes on the same board, a link card and a non-link card side by
+side.
+
+`fz="md"` on the card's `Paper` pins the basis, so everything inside is
+relative to one known value whatever the card turns out to be.
+
 ### An app with no href is not a link
 
 Homarr lets an app be saved with a null or empty `href`, and `isSafeUrl`

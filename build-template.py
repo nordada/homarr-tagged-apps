@@ -164,11 +164,17 @@ LINK_ICON = ('{app._ic?(<TablerIcon name="external-link" size="0.85em" '
 
 
 def card(dot):
-    paper = ('<Paper withBorder radius={6} p="xs" '
+    # fz="md" pins the em basis on the card. Everything inside sized in em, the
+    # status line and the new-tab glyph, is relative to the inherited font
+    # size, and a card with an href is wrapped in an Anchor while a card
+    # without one is not. Anchor is a Text underneath and carries its own font
+    # size, so without this the same template rendered the status line at two
+    # different sizes depending on whether the app had a URL.
+    paper = ('<Paper withBorder radius={6} p="xs" fz="md" '
              f'bg={{options.highlightDown&&{CODE}===-1?"rgba(224,49,49,0.10)":"transparent"}} '
              'style={{borderColor:options.highlightDown&&'
              f'{CODE}===-1?"var(--mantine-color-red-6)":undefined}}}}>'
-             ) if dot else '<Paper withBorder radius={6} p="xs">'
+             ) if dot else '<Paper withBorder radius={6} p="xs" fz="md">'
     body = (('<Stack gap={2} flex={1} miw={0}>' + NAME + CODE_LINE + '</Stack>')
             if dot else NAME_WIDE)
     # No Anchor here. The link wraps the whole card once, in SUB below, rather
