@@ -58,9 +58,27 @@ LINKFLAGS = ('[' + QEXPR + ',options.clickToOpen!==false'
              ',options.showNewTabIcon===true&&options.clickToOpen!==false'
              '&&options.openInNewTab!==false]')
 
+# An app with no href is not a link, whatever the options say. Homarr allows an
+# app to be saved with a null or empty href, and wrapping one in an Anchor
+# raises INVALID_PROP_VALUE: 'Anchor.href' contains an unsafe URL, once per
+# render, because isSafeUrl accepts only "#...", a single-slash path, or an
+# http(s) URL. Such a card renders exactly like the view-only mode: no anchor,
+# no pointer, no glyph.
+#
+# Tested per app here rather than in the card, because the card is emitted
+# three times per app and this way the check runs once.
+# a.href itself, not a comparison: an absent href is null and an empty one is
+# "", both falsy, so the truthiness is the test and costs one property read
+# rather than three operations. _cl and _ic then hold the href string rather
+# than a boolean, which is all a ternary condition needs. The earlier
+# (a.href||"")!=="" form pushed the glyph path past the operation limit at 83
+# cards.
+HREF_OK = 'a.href'
+
 LIST = ('[[' + K + '].map((keys)=>[' + PIPELINE + '].map((arr)=>['
         + LINKFLAGS + '].map((b)=>arr.map((a)=>'
-        '({...a,_q:b[0],_cl:b[1],_tg:b[2],_ic:b[3]})))[0])[0])[0]]')
+        '({...a,_q:b[0],_cl:b[1]&&' + HREF_OK + ',_tg:b[2]'
+        ',_ic:b[3]&&' + HREF_OK + '})))[0])[0])[0]]')
 
 # One binding holding [code, latencyMs]. code: a real 1xx-5xx, or -1 for down,
 # or null for a slot that was never filled. ms: -1 when unknown. Binding the

@@ -27,6 +27,20 @@
       "href": "http://host/4",
       "description": "",
       "iconUrl": ""
+    },
+    {
+      "id": "nohref",
+      "name": "No URL",
+      "href": "",
+      "description": "media",
+      "iconUrl": "/icon/n.png"
+    },
+    {
+      "id": "nullhref",
+      "name": "Null URL",
+      "href": null,
+      "description": "media",
+      "iconUrl": "/icon/x.png"
     }
   ],
   "cases": [
@@ -198,6 +212,26 @@
       "options": {
         "categories": "media",
         "showNewTabIcon": true
+      }
+    },
+    {
+      "label": "app with no href",
+      "options": {
+        "categories": "media"
+      }
+    },
+    {
+      "label": "app with no href, glyph on",
+      "options": {
+        "categories": "media",
+        "showNewTabIcon": true
+      }
+    },
+    {
+      "label": "app with no href, view only",
+      "options": {
+        "categories": "media",
+        "clickToOpen": false
       }
     }
   ]

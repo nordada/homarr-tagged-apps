@@ -163,6 +163,23 @@ is why this reproduces on one Homarr and not another.
   selection. An inline `style={{userSelect:'text'}}` overrides it, and works in
   view mode only.
 
+### An app with no href is not a link
+
+Homarr lets an app be saved with a null or empty `href`, and `isSafeUrl`
+accepts only `#...`, a single-slash path, or an http(s) URL. Wrapping such an
+app in an `Anchor` produces, once per render:
+
+```text
+INVALID_PROP_VALUE: 'Anchor.href' contains an unsafe URL
+```
+
+It is a warning rather than a failure, so the board still renders and the only
+sign is the warning count in the widget's diagnostics. The template treats an
+app with no href as not clickable, which is the same path as view-only mode: no
+anchor, no pointer, no glyph. The test is `a.href` itself rather than a
+comparison, because an absent href is null and an empty one is `""`, and the
+comparison form cost enough to push the glyph path past the operation limit.
+
 ### TablerIcon takes three props and drops the rest
 
 `SafeTablerIcon`, in `packages/widgets/src/custom-api/jsx-icon-adapter.tsx`,
@@ -249,9 +266,9 @@ It moves with the link options, measured rather than estimated:
 | Card | Ceiling |
 | --- | --- |
 | before the link options existed | 94 |
-| default: clickable, new tab, no glyph | 85 |
-| **Cards open the app** off | 90 |
-| **Mark links that open a new tab** on | 84 |
+| default: clickable, new tab, no glyph | 84 |
+| **Cards open the app** off | 89 |
+| **Mark links that open a new tab** on | 83 |
 
 Nine cards of headroom went on making the link optional, and only one of those
 is the glyph. The cost is the choice itself: the card is emitted three times per
