@@ -138,12 +138,12 @@
       }
     },
     {
-      "label": "84 cards, just under the ceiling",
+      "label": "86 cards, just under the ceiling",
       "options": {
         "categories": "media"
       },
       "generate": {
-        "count": 84,
+        "count": 86,
         "sameTag": "media"
       }
     },
@@ -193,9 +193,9 @@
       }
     },
     {
-      "label": "89 cards, view only, just under its ceiling",
+      "label": "91 cards, view only, just under its ceiling",
       "generate": {
-        "count": 89,
+        "count": 91,
         "sameTag": "media"
       },
       "options": {
@@ -204,9 +204,9 @@
       }
     },
     {
-      "label": "83 cards, new tab icon, just under its ceiling",
+      "label": "85 cards, new tab icon, just under its ceiling",
       "generate": {
-        "count": 83,
+        "count": 85,
         "sameTag": "media"
       },
       "options": {
@@ -232,6 +232,386 @@
       "options": {
         "categories": "media",
         "clickToOpen": false
+      }
+    },
+    {
+      "label": "order: A to Z ignores case",
+      "options": {
+        "categories": "media",
+        "showStatus": false
+      },
+      "apps": [
+        {
+          "id": "pihole",
+          "name": "pihole",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "zabbix",
+          "name": "Zabbix",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "ejuice",
+          "name": "eJuice",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "acronyms",
+          "name": "Acronyms",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "ascii",
+          "name": "ASCII",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        }
+      ]
+    },
+    {
+      "label": "order: Z to A",
+      "options": {
+        "categories": "media",
+        "showStatus": false,
+        "appSort": "za"
+      },
+      "apps": [
+        {
+          "id": "pihole",
+          "name": "pihole",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "zabbix",
+          "name": "Zabbix",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "ejuice",
+          "name": "eJuice",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "acronyms",
+          "name": "Acronyms",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "ascii",
+          "name": "ASCII",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        }
+      ]
+    },
+    {
+      "label": "order: numbers first, then names",
+      "options": {
+        "categories": "media",
+        "showStatus": false
+      },
+      "apps": [
+        {
+          "id": "sonarr",
+          "name": "Sonarr",
+          "href": "http://host.invalid/x",
+          "description": "media, 20",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "radarr",
+          "name": "Radarr",
+          "href": "http://host.invalid/x",
+          "description": "media,10",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "bazarr",
+          "name": "Bazarr",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "prowlarr",
+          "name": "Prowlarr",
+          "href": "http://host.invalid/x",
+          "description": "10, media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "alpha",
+          "name": "alpha",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "lidarr",
+          "name": "Lidarr",
+          "href": "http://host.invalid/x",
+          "description": "media, 5, 99",
+          "iconUrl": "/icon/x.png"
+        }
+      ]
+    },
+    {
+      "label": "order: numbers stay ascending under Z to A",
+      "options": {
+        "categories": "media",
+        "showStatus": false,
+        "appSort": "za"
+      },
+      "apps": [
+        {
+          "id": "sonarr",
+          "name": "Sonarr",
+          "href": "http://host.invalid/x",
+          "description": "media, 20",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "radarr",
+          "name": "Radarr",
+          "href": "http://host.invalid/x",
+          "description": "media,10",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "bazarr",
+          "name": "Bazarr",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "prowlarr",
+          "name": "Prowlarr",
+          "href": "http://host.invalid/x",
+          "description": "10, media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "alpha",
+          "name": "alpha",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "lidarr",
+          "name": "Lidarr",
+          "href": "http://host.invalid/x",
+          "description": "media, 5, 99",
+          "iconUrl": "/icon/x.png"
+        }
+      ]
+    },
+    {
+      "label": "order: one number serves both groups",
+      "options": {
+        "categories": "media, admin",
+        "showStatus": false
+      },
+      "apps": [
+        {
+          "id": "sonarr",
+          "name": "Sonarr",
+          "href": "http://host.invalid/x",
+          "description": "media, admin, 20",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "radarr",
+          "name": "Radarr",
+          "href": "http://host.invalid/x",
+          "description": "media, 10",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "grafana",
+          "name": "Grafana",
+          "href": "http://host.invalid/x",
+          "description": "admin, 30",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "portainer",
+          "name": "Portainer",
+          "href": "http://host.invalid/x",
+          "description": "admin",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "plex",
+          "name": "Plex",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        }
+      ]
+    },
+    {
+      "label": "order: a number is not a category in the picker",
+      "options": {},
+      "apps": [
+        {
+          "id": "sonarr",
+          "name": "Sonarr",
+          "href": "http://host.invalid/x",
+          "description": "media, 20",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "radarr",
+          "name": "Radarr",
+          "href": "http://host.invalid/x",
+          "description": "media,10",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "bazarr",
+          "name": "Bazarr",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "prowlarr",
+          "name": "Prowlarr",
+          "href": "http://host.invalid/x",
+          "description": "10, media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "alpha",
+          "name": "alpha",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "lidarr",
+          "name": "Lidarr",
+          "href": "http://host.invalid/x",
+          "description": "media, 5, 99",
+          "iconUrl": "/icon/x.png"
+        }
+      ]
+    },
+    {
+      "label": "order: a numeric keyword still routes when listed",
+      "options": {
+        "categories": "20",
+        "showStatus": false
+      },
+      "apps": [
+        {
+          "id": "onlynumber",
+          "name": "OnlyNumber",
+          "href": "http://host.invalid/x",
+          "description": "20",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "sonarr",
+          "name": "Sonarr",
+          "href": "http://host.invalid/x",
+          "description": "media, 20",
+          "iconUrl": "/icon/x.png"
+        }
+      ]
+    },
+    {
+      "label": "order: description that is only a number",
+      "options": {},
+      "apps": [
+        {
+          "id": "onlynumber",
+          "name": "OnlyNumber",
+          "href": "http://host.invalid/x",
+          "description": "20",
+          "iconUrl": "/icon/x.png"
+        }
+      ]
+    },
+    {
+      "label": "order: numbered apps with dots on",
+      "options": {
+        "categories": "media"
+      },
+      "apps": [
+        {
+          "id": "sonarr",
+          "name": "Sonarr",
+          "href": "http://host.invalid/x",
+          "description": "media, 20",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "radarr",
+          "name": "Radarr",
+          "href": "http://host.invalid/x",
+          "description": "media,10",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "bazarr",
+          "name": "Bazarr",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "prowlarr",
+          "name": "Prowlarr",
+          "href": "http://host.invalid/x",
+          "description": "10, media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "alpha",
+          "name": "alpha",
+          "href": "http://host.invalid/x",
+          "description": "media",
+          "iconUrl": "/icon/x.png"
+        },
+        {
+          "id": "lidarr",
+          "name": "Lidarr",
+          "href": "http://host.invalid/x",
+          "description": "media, 5, 99",
+          "iconUrl": "/icon/x.png"
+        }
+      ]
+    },
+    {
+      "label": "84 cards all carrying the same number, just under its ceiling",
+      "options": {
+        "categories": "media"
+      },
+      "generate": {
+        "count": 84,
+        "sameTag": "media, 7"
       }
     }
   ]

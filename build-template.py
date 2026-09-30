@@ -32,14 +32,36 @@ K = ('(options.categories||"").split(",").map((e)=>e.split("="))'
      '(p[1]||p[0]||"").trim()])'
      '.filter((p)=>p[0]!=="")')
 
+# Order inside a category. Three keys, computed once per app in the map that
+# already attaches the heading, so the comparator only ever reads fields:
+#   _o  the first purely numeric keyword in the description, or a million.
+#       `media, 20` orders the app by hand; a number is never a category, so a
+#       board that has not been touched sorts exactly as it would without it.
+#       Numbered apps come first, lowest first, in both directions: a manual
+#       order that flipped with the A-Z switch would not be a manual order.
+#   _n  the name lowercased. The old comparator used a bare < on the raw name,
+#       which is case-sensitive: "ASCII" before "Acronyms", and every lowercase
+#       name after "Zabbix".
+#   _sd 1 or -1 from the appSort option, read once per app rather than once per
+#       comparison.
+# t!=="" comes before isFinite because Number("") is 0, which is finite, and an
+# empty keyword would otherwise read as position zero.
+#
+# The comparator used to carry a tier comparing _g, the heading. With categories
+# configured _gi already decides the group, so that tier could never differ and
+# cost four guarded reads on every comparison. Dropping it is what pays for the
+# number: measured with shuffled names, 74 cards before, 107 with only the name
+# key, and 74 to 90 with the number as well.
 PIPELINE = ('data.apps.filter((a)=>(a.description||"")!=="")'
             '.map((a)=>[(a.description||"").toLowerCase().replaceAll(" ","")]'
             '.map((d)=>({...a,_d:d,_gi:keys.length===0?0:'
             'keys.findIndex((k)=>(","+d+",").includes(","+k[0]+","))}))[0])'
             '.filter((a)=>a._gi>=0)'
-            '.map((a)=>({...a,_g:keys.length===0?a._d.split(",")[0]:keys[a._gi][1]}))'
-            '.sort((x,y)=>x._gi!==y._gi?x._gi-y._gi:((x._g||"")<(y._g||"")?-1:'
-            '((x._g||"")>(y._g||"")?1:((x.name||"")<(y.name||"")?-1:((x.name||"")>(y.name||"")?1:0)))))')
+            '.map((a)=>({...a,_g:keys.length===0?a._d.split(",")[0]:keys[a._gi][1],'
+            '_n:(a.name||"").toLowerCase(),_sd:options.appSort==="za"?-1:1,'
+            '_o:Number(a._d.split(",").filter((t)=>t!==""&&isFinite(t))[0]||1000000)}))'
+            '.sort((x,y)=>x._gi!==y._gi?x._gi-y._gi:(x._o!==y._o?x._o-y._o:'
+            '(x._n<y._n?-x._sd:(x._n>y._n?x._sd:0))))')
 
 # identical for every card, so build once and hang it on each app as _q
 QEXPR = ('[\'{\',' + IDX +
@@ -213,7 +235,11 @@ ALLSTR = ('[data.apps.filter((a)=>(a.description||"")!=="")'
           '.map((a)=>(a.description||"").toLowerCase().replaceAll(" ",""))'
           '.join(",")]')
 
-ALL = 'str.split(",").filter((k)=>k!=="")'
+# A purely numeric keyword is an app's position, not a category, so the picker
+# leaves it out: otherwise every number in use shows up as a chip to copy.
+# ===false rather than !, because only strict comparison behaves the same in
+# every sandbox build.
+ALL = 'str.split(",").filter((k)=>k!==""&&isFinite(k)===false)'
 
 # ",,media,,arrs,,media,," every key delimited by its own pair of commas, so a
 # split on ",media," cannot straddle two entries, two adjacent copies of the

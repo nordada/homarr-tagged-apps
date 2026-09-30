@@ -5,6 +5,22 @@
     "control": "text",
     "default": ""
   },
+  "appSort": {
+    "label": "Order within a category",
+    "description": "Apps in a group are listed by name, ignoring case. To place apps by hand, add a number beside the keywords in an app's description, for example media, 20. Numbered apps come first, lowest number first, whichever direction this is set to, and the rest follow by name. Leave gaps such as 10, 20, 30 so an app can be slotted in later. One number per app, used in every group it appears in.",
+    "control": "select",
+    "default": "az",
+    "choices": [
+      {
+        "label": "A to Z",
+        "value": "az"
+      },
+      {
+        "label": "Z to A",
+        "value": "za"
+      }
+    ]
+  },
   "showCategoryHeader": {
     "label": "Show category headings",
     "description": "Print the category name above each group. Off still keeps the gap between groups, so they stay visually separated rather than running together. Useful when a widget shows a single category and the heading just repeats the tile title.",

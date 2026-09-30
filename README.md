@@ -264,11 +264,11 @@ Measured ceilings for this widget, from `tools/sandbox-check.sh`:
 
 | Board | Apps before it fails |
 | --- | --- |
-| 1 keyword per app | 556 |
-| 2 keywords per app | 353 |
-| 3 keywords per app | 259 |
-| every description a different sentence | 331 |
-| **apps shown in one widget's categories** | **85** |
+| 1 keyword per app | 558 |
+| 2 keywords per app | 355 |
+| 3 keywords per app | 260 |
+| every description a different sentence | 310 |
+| **apps shown in one widget's categories** | **86** |
 
 That last one is the operation budget rather than the collection budget, it is
 about rendering cards rather than about the picker, and it has been there from
@@ -279,9 +279,9 @@ It moves with the link options, measured rather than estimated:
 | Card | Ceiling |
 | --- | --- |
 | before the link options existed | 94 |
-| default: clickable, new tab, no glyph | 84 |
-| **Cards open the app** off | 89 |
-| **Mark links that open a new tab** on | 83 |
+| default: clickable, new tab, no glyph | 86 |
+| **Cards open the app** off | 91 |
+| **Mark links that open a new tab** on | 85 |
 
 Nine cards of headroom went on making the link optional, and only one of those
 is the glyph. The cost is the choice itself: the card is emitted three times per
@@ -291,6 +291,37 @@ shown. Hoisting the option reads onto each app beside `_q`, and moving the
 `Anchor` out to wrap the whole `SubFetch` once instead of each card variant,
 both helped less than expected: 86 and 85 against 84 for reading the options
 inline. That is why the hoisted form shipped, not because it was free.
+
+It moves with the order inside a category too, and here the change went the
+other way. Every row above was remeasured after the comparator was rewritten,
+which is why they sit two higher than the numbers quoted in the paragraph
+before this one; the gaps between rows are what that paragraph is about.
+
+| Order | Ceiling |
+| --- | --- |
+| A to Z, nothing numbered | 86 |
+| Z to A | 85 |
+| every app carrying the same number | 84 |
+| every app numbered differently, names and numbers shuffled | 79 |
+
+The comparator used to compare the category heading before it compared the
+name. Once `categories` is set the group index has already separated the
+groups, so that tier could never differ, and it cost four guarded property
+reads on every one of the n log n comparisons. The order number, the
+lowercased name and the direction are instead computed once per app, in the
+`map` that already attaches the heading, and the comparator only reads fields.
+With names in shuffled order that took the ceiling from 74 cards to 107, which
+is more than reading a number out of each description costs: the worst
+numbered case measured lands at 74 again, where the widget started.
+
+A comparator is the most expensive place in a template to do anything, because
+it runs more often than any other callback. Read an option there and it is
+read n log n times. Hang it on the item first.
+
+The picker pays a little for the same feature, because it now drops numeric
+keywords so that an order number is not offered as a category. That is one
+`isFinite` per keyword: free for a board of short keywords, and 331 down to
+310 where every description is a sentence.
 
 ### Resource limits
 

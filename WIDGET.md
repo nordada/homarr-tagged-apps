@@ -25,7 +25,7 @@ it anywhere, tag some apps, and it works.
 ## Tagging apps
 
 An app joins a group when its description contains that keyword. A plain comma
-list, no numbering:
+list:
 
 ```
 audio
@@ -34,6 +34,45 @@ arrs,media
 
 An app can carry several keywords and appear in several copies. Apps with an
 empty description never appear.
+
+## Ordering apps within a category
+
+Inside a group, apps are listed by name, ignoring case. *Order within a
+category* switches that between A to Z and Z to A.
+
+To place apps by hand, add a number to an app's description, beside its
+keywords:
+
+```
+arrs, 10
+arrs, 20
+arrs,media, 30
+arrs
+```
+
+- **Numbered apps come first, lowest number first.** That holds in both
+  directions: Z to A reverses the names, never the numbers.
+- **Apps with no number follow**, by name, in the direction you chose.
+- **Two apps with the same number** fall back to name order between themselves.
+- **Leave gaps.** 10, 20, 30 lets you slot an app in at 15 later without
+  renumbering the rest.
+- **One number per app.** It applies in every group the app appears in, so an
+  app cannot be third in one category and first in another. If a description
+  holds several numbers, the first one counts.
+- **Where it sits does not matter.** `20, arrs` and `arrs, 20` are the same,
+  and spaces are ignored as they are for keywords.
+
+A number is never a category. It does not appear in the category picker, and a
+widget that has not been updated ignores it, so numbering apps cannot make one
+disappear from a board.
+
+*Max apps with a dot* counts from the top of the list, so on a long category
+the numbers also decide which apps get pinged.
+
+**A keyword made only of digits is read as a position.** If you already use one
+as a category, `2024` say, it still works when you type it into `categories`,
+but the picker no longer offers it and every app carrying it is positioned by
+it.
 
 Leave the `categories` option blank and the widget lists every keyword it can
 see, with counts, ready to copy. If nothing is tagged yet it explains how to
@@ -94,6 +133,7 @@ governs.
 | Option | Type | Default | What it does |
 | --- | --- | --- | --- |
 | `categories` | text | blank | Keywords to show, comma separated, in display order. Write `keyword=Heading` to relabel one. Blank shows the category picker. |
+| `appSort` | select | A to Z | Direction of the name order inside each group. Apps with a number in their description come first either way, lowest first. |
 | **`showCategoryHeader`** | switch | on | **Print the category name above each group.** Off keeps the gap between groups so they stay separated. |
 | `headerUppercase` | switch | on | Capitalise the headings. Off keeps the case you typed. |
 | **`showStatus`** | switch | on | **Ping the apps and show dots.** Off makes this a plain link list at no request cost. |
@@ -236,6 +276,16 @@ service is down.
 of them**, at which point it keeps board order instead. Past 60 the panel is
 telling you the descriptions are prose rather than keywords, and sorting that
 many is what pushes the widget over its budget.
+
+**The order of a category changed after an update.**
+Names are now compared without regard to case. Before, every name starting with
+a lowercase letter sorted after all the capitalised ones, and `ASCII` came
+before `Acronyms`. Add numbers to the descriptions to pin an order of your own.
+
+**I numbered an app and nothing moved.**
+Same 60 second cache as retagging. Also check the number is its own
+comma-separated entry: `arrs, 20` is a position, `arrs20` and `arrs 20` are both
+the single keyword `arrs20`, because spaces are removed.
 
 **The picker lists categories I have already used elsewhere.**
 A widget can only see the app list, never the board or other widgets, so it
