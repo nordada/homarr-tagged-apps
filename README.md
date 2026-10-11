@@ -4,27 +4,98 @@ A custom widget for [Homarr](https://homarr.dev) 2.x that groups the apps you
 already have by keywords you write in each app's **Description** field, with
 live status dots, HTTP status codes and ping latency.
 
-```
-      UTILITIES
- ┌──────────────────────────┐
- │ 🗄  ArchiveBox            │
- │    HTTP 200  6 ms        │
- ├──────────────────────────┤
- │ 📕  Calibre              │
- │    HTTP 401  12 ms       │
- └──────────────────────────┘
-      ARRS
- ┌──────────────────────────┐
- │ 🐰  Autobrrr             │
- │    DOWN                  │   ← red border, unreachable
- └──────────────────────────┘
-```
+![Seven copies of the widget on one board, each configured differently](docs/screenshots/gallery-themed.jpg)
+
+Seven copies of the same widget on one board, each with different options. The
+board here carries a custom theme; every screenshot further down is stock
+Homarr, dark mode, with no custom CSS.
 
 Nothing in the definition names a specific app, so it is portable: install it,
 tag some apps, and it works. Homarr has no dense multi-app widget; Bookmarks is
 compact but carries no status.
 
 See [WIDGET.md](WIDGET.md) for tagging, every option, and how the ping works.
+
+## What it does
+
+Every picture below is one copy of the widget. The only thing that changes
+between them is the options on that copy, set from the tile's edit menu.
+
+### Groups with live status
+
+<img src="docs/screenshots/hero.png" width="395" alt="Two categories, one app unreachable">
+
+`categories` set to `utilities, arrs`. Each keyword becomes a group, in the
+order you typed them, and every app whose description carries that keyword
+lands in it. An app can carry several keywords and appear in several groups.
+
+Each card shows a status dot, the HTTP status code and how long the ping took.
+A 401 or 403 counts as up, because the service answered. An app that does not
+answer at all reads `DOWN` and gets a red border and fill, so an outage is
+visible without hunting for a dot. Up to 24 apps per copy are pinged, in one
+batched request.
+
+### Your own headings
+
+<img src="docs/screenshots/headings.png" width="395" alt="Groups renamed with keyword=Heading">
+
+`categories` set to `utilities=Self-hosted tools, inference=LLM providers`,
+with **Uppercase the headings** off. `keyword=Heading` prints a heading other
+than the keyword, so the tag you type into an app can stay short while the
+board reads the way you want.
+
+### A plain link list
+
+<img src="docs/screenshots/links.png" width="395" alt="Status turned off">
+
+**Show status dots** off. No dots, no codes, no latency, and no requests at
+all, which makes this a dense replacement for Bookmarks that is fed by the
+apps you already have.
+
+### Status on the right, and a new-tab mark
+
+<img src="docs/screenshots/right.png" width="395" alt="Right-aligned status line and new-tab glyph">
+
+**Align status line right** and **Mark links that open a new tab** on. Cards
+open the app in a new tab by default; they can open in the same tab instead,
+or not be links at all, which makes the widget a read-only list of what you
+run.
+
+### One category, no heading
+
+<img src="docs/screenshots/noheader.png" width="395" alt="A single category with its heading hidden">
+
+**Show category headings** off, for a tile whose own title already says what
+is in it.
+
+### Colour by value
+
+<img src="docs/screenshots/latency.png" width="395" alt="Latency coloured by threshold, status code without a prefix">
+
+Latency changes colour at two thresholds you set per copy, here 20 ms and
+400 ms, because an app pinged over the LAN and one pinged through a cloud
+relay have different normal ranges. Status codes are coloured in three bands
+the same way. The `HTTP ` prefix is cleared here for the compact look.
+
+### Order within a group
+
+<img src="docs/screenshots/za.png" width="395" alt="Apps listed Z to A">
+
+**Order within a category** set to Z to A. To place apps by hand, put a number
+beside the keywords in an app's description, for example `media, 20`: numbered
+apps come first, lowest first, and the rest follow by name.
+
+### Finding your keywords
+
+Leave `categories` blank and the widget lists every keyword it can find across
+your apps, with a count beside each, as text you can select and copy straight
+into the option. On an instance where no app has a description yet, it
+explains how to tag one and links to the documentation instead of rendering
+empty.
+
+### All of them at once
+
+![The same seven copies on stock Homarr](docs/screenshots/gallery.png)
 
 ## Installing
 
