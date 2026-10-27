@@ -98,6 +98,21 @@
       }
     },
     {
+      "label": "card size 150",
+      "options": {
+        "categories": "media, system",
+        "cardSize": "1.5"
+      }
+    },
+    {
+      "label": "card size 200, dots off",
+      "options": {
+        "categories": "media",
+        "cardSize": "2",
+        "showStatus": false
+      }
+    },
+    {
       "label": "keyword that matches nothing",
       "options": {
         "categories": "nosuchtag"

@@ -244,8 +244,14 @@ wrapped at all. The same `size="0.5625em"` then rendered at two visibly
 different sizes on the same board, a link card and a non-link card side by
 side.
 
-`fz="md"` on the card's `Paper` pins the basis, so everything inside is
-relative to one known value whatever the card turns out to be.
+`fz` on the card's `Paper` pins the basis, so everything inside is relative to
+one known value whatever the card turns out to be. Since the `cardSize` option
+that value is also the card's size: `calc(var(--mantine-font-size-md) * n)`,
+hoisted onto each app as `_fz`, and every dimension in the card is em (icon
+1.5em, dot 0.5em, name 0.75em, padding 0.625em, radius 0.375em), so one font
+size scales the lot and a stylesheet rule on the Paper can do the same for a
+phone. Measured after the change: the ceilings in the tables below did not
+move, at 100% or at 200%.
 
 ### An app with no href is not a link
 

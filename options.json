@@ -21,6 +21,30 @@
       }
     ]
   },
+  "cardSize": {
+    "label": "Card size",
+    "description": "How big each app card is drawn, as a share of the normal size. Everything in the card scales together: icon, dot, name, status line, padding. Pick a larger size for a copy that should fill a wide tile or read well on a phone; the size applies to this copy on every layout of the board. For a size that applies on phones only, see the phone stylesheet note in the documentation.",
+    "control": "select",
+    "default": "1",
+    "choices": [
+      {
+        "label": "Normal",
+        "value": "1"
+      },
+      {
+        "label": "Larger (125%)",
+        "value": "1.25"
+      },
+      {
+        "label": "Large (150%)",
+        "value": "1.5"
+      },
+      {
+        "label": "Double (200%)",
+        "value": "2"
+      }
+    ]
+  },
   "showCategoryHeader": {
     "label": "Show category headings",
     "description": "Print the category name above each group. Off still keeps the gap between groups, so they stay visually separated rather than running together. Useful when a widget shows a single category and the heading just repeats the tile title.",

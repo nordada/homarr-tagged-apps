@@ -74,11 +74,20 @@ QEXPR = ('[\'{\',' + IDX +
 # options.* inside the card instead measured 8 cards off the ceiling, 94 down
 # to 86, before this was hoisted. One array binding rather than three nested
 # ones, because each binding also costs AST depth against a ceiling of 64.
-#   _cl clickable, _tg anchor target, _ic show the new-tab glyph
+#   _cl clickable, _tg anchor target, _ic show the new-tab glyph,
+#   _fz the card's font size, which is the card's size
+#
+# Card size rides on the em basis: everything inside the card is sized in em
+# (icon, dot, name, padding, gap, radius), so one font size on the Paper scales
+# the whole card. The value is the theme's md size times the factor rather
+# than a bare rem, so the board's UI scale still applies, and it is a calc()
+# string because that is what Mantine's rem() passes through untouched. An
+# unset option (a copy placed before the option existed) reads as 1.
 LINKFLAGS = ('[' + QEXPR + ',options.clickToOpen!==false'
              ',options.openInNewTab===false?"_self":"_blank"'
              ',options.showNewTabIcon===true&&options.clickToOpen!==false'
-             '&&options.openInNewTab!==false]')
+             '&&options.openInNewTab!==false'
+             ',"calc(var(--mantine-font-size-md) * "+(Number(options.cardSize)||1)+")"]')
 
 # An app with no href is not a link, whatever the options say. Homarr allows an
 # app to be saved with a null or empty href, and wrapping one in an Anchor
@@ -100,7 +109,7 @@ HREF_OK = 'a.href'
 LIST = ('[[' + K + '].map((keys)=>[' + PIPELINE + '].map((arr)=>['
         + LINKFLAGS + '].map((b)=>arr.map((a)=>'
         '({...a,_q:b[0],_cl:b[1]&&' + HREF_OK + ',_tg:b[2]'
-        ',_ic:b[3]&&' + HREF_OK + '})))[0])[0])[0]]')
+        ',_ic:b[3]&&' + HREF_OK + ',_fz:b[4]})))[0])[0])[0]]')
 
 # One binding holding [code, latencyMs]. code: a real 1xx-5xx, or -1 for down,
 # or null for a slot that was never filled. ms: -1 when unknown. Binding the
@@ -119,11 +128,16 @@ BIND = ('[[r?((r.result&&r.result.data&&r.result.data.json'
 OK   = f'(({CODE}>=200&&{CODE}<400)||{CODE}===401||{CODE}===403)'
 WARN = f'({CODE}>=400&&{CODE}<600)'
 
-DOT = ('<Indicator size={8} offset={3} position="bottom-end" withBorder '
+# Every dimension in the card is em so that the card's font size is its size
+# (see _fz). 16px basis: the 24px icon is 1.5em, the 8px dot 0.5em, xs text
+# 0.75em, xs spacing 0.625em, the 6px radius 0.375em. Mantine's rem() returns
+# an em string unchanged, so these reach the CSS as written. The dot's offset
+# stays a number: Indicator types it as number only.
+DOT = ('<Indicator size="0.5em" offset={3} position="bottom-end" withBorder '
        f'color={{{CODE}===null?"gray.6":({CODE}===-1?"red":({OK}?"green":({WARN}?"orange":"red")))}}>'
-       '<Image src={app.iconUrl} alt={app.name} w={24} h={24} fit="contain"/></Indicator>')
+       '<Image src={app.iconUrl} alt={app.name} w="1.5em" h="1.5em" fit="contain"/></Indicator>')
 
-PLAIN_ICON = '<Image src={app.iconUrl} alt={app.name} w={24} h={24} fit="contain"/>'
+PLAIN_ICON = '<Image src={app.iconUrl} alt={app.name} w="1.5em" h="1.5em" fit="contain"/>'
 
 # Blank warn/err colours fall back to codeColor, so the default is one colour
 # for everything and banding is opt-in.
@@ -145,7 +159,7 @@ LAT_C = (f'({MS}>=Number(options.latencyBadMs||1000)&&Number(options.latencyBadM
 # 16px base, so a board at scale 1 looks exactly as it did before and every
 # other scale now keeps the same proportion to the name, which is `xs`, or
 # 0.75em by the same measure.
-CODE_LINE = ('<Group gap={5} wrap="nowrap" '
+CODE_LINE = ('<Group gap="0.3125em" wrap="nowrap" '
              'justify={options.statusAlignRight?"flex-end":"flex-start"}>'
              f'{{options.showCodes===false||{CODE}===null?null:'
              f'(<Text size="0.5625em" fw={{{CODE}===-1?700:400}} c={{{CODE_C}}}>'
@@ -155,11 +169,11 @@ CODE_LINE = ('<Group gap={5} wrap="nowrap" '
              f'{{[String({MS}).split(".")[0]," ms"].join("")}}</Text>):null}}'
              '</Group>')
 
-NAME = '<Text fw={700} size="xs" lineClamp={1}>{app.name}</Text>'
+NAME = '<Text fw={700} size="0.75em" lineClamp={1}>{app.name}</Text>'
 # Only the dot variant wraps the name in a flex:1 Stack. Without a dot the name
 # is the sole child, so it has to carry the flex itself, otherwise the new-tab
 # glyph sits against the name rather than at the card's right edge.
-NAME_WIDE = '<Text fw={700} size="xs" lineClamp={1} flex={1} miw={0}>{app.name}</Text>'
+NAME_WIDE = '<Text fw={700} size="0.75em" lineClamp={1} flex={1} miw={0}>{app.name}</Text>'
 
 # Homarr cannot hide one option based on another: the option schema is a
 # strictObject of label/description/control/default/choices/choicesFrom/min/
@@ -186,25 +200,27 @@ LINK_ICON = ('{app._ic?(<TablerIcon name="external-link" size="0.85em" '
 
 
 def card(dot):
-    # fz="md" pins the em basis on the card. Everything inside sized in em, the
-    # status line and the new-tab glyph, is relative to the inherited font
-    # size, and a card with an href is wrapped in an Anchor while a card
-    # without one is not. Anchor is a Text underneath and carries its own font
-    # size, so without this the same template rendered the status line at two
-    # different sizes depending on whether the app had a URL.
-    paper = ('<Paper withBorder radius={6} p="xs" fz="md" '
+    # fz on the Paper pins the em basis on the card, and since 2026-10-27 it
+    # is also the card's size (app._fz, md times the Card size option).
+    # Everything inside is sized in em, so it is relative to this one value,
+    # which matters twice over: a card with an href is wrapped in an Anchor
+    # while a card without one is not, and Anchor is a Text underneath with a
+    # font size of its own. Before fz was pinned the same template rendered
+    # the status line at two different sizes depending on whether the app had
+    # a URL.
+    paper = ('<Paper withBorder radius="0.375em" p="0.625em" fz={app._fz} '
              f'bg={{options.highlightDown&&{CODE}===-1?"rgba(224,49,49,0.10)":"transparent"}} '
              'style={{borderColor:options.highlightDown&&'
              f'{CODE}===-1?"var(--mantine-color-red-6)":undefined}}}}>'
-             ) if dot else '<Paper withBorder radius={6} p="xs" fz="md">'
-    body = (('<Stack gap={2} flex={1} miw={0}>' + NAME + CODE_LINE + '</Stack>')
+             ) if dot else '<Paper withBorder radius="0.375em" p="0.625em" fz={app._fz}>'
+    body = (('<Stack gap="0.125em" flex={1} miw={0}>' + NAME + CODE_LINE + '</Stack>')
             if dot else NAME_WIDE)
     # No Anchor here. The link wraps the whole card once, in SUB below, rather
     # than once per card variant: card() is emitted three times per app
     # (triggerContent, fallback, and the resolved child), so a conditional
     # Anchor inside it put that choice on the deep path three times over and
     # measured 6 cards off the 25,000 operation ceiling, 94 down to 88.
-    return (paper + '<Group wrap="nowrap" gap="xs" justify="start">'
+    return (paper + '<Group wrap="nowrap" gap="0.625em" justify="start">'
             + (DOT if dot else PLAIN_ICON) + body + LINK_ICON + '</Group></Paper>')
 
 
@@ -217,7 +233,7 @@ HEAD = ('{(options.showCategoryHeader===false)?((i===0||list[i-1]._gi!==app._gi)
         'tt={options.headerUppercase===false?"none":"uppercase"} c="dimmed" fz="xs" '
         'mt={i===0?0:"10px"} mb="2px" ta="center">{app._g}</Text>):null)}')
 
-SKEL = '<Paper withBorder radius={6} p="xs"><Skeleton height={24} radius="sm"/></Paper>'
+SKEL = '<Paper withBorder radius="0.375em" p="0.625em" fz={app._fz}><Skeleton height="1.5em" radius="sm"/></Paper>'
 SEL  = "userSelect:'text',WebkitUserSelect:'text'"
 # The picker below runs on every tagged app on the instance, against a budget
 # of 4000 collection items, so its cost has to stay linear in that number.

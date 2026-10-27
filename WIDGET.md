@@ -120,10 +120,34 @@ with it off. Left on by default so existing boards look unchanged.
 
 ### Applying these to a widget already on a board
 
-Re-paste `template.jsx` and `options.json` in the workbench. The two new option
+Re-paste `template.jsx` and `options.json` in the workbench. The new option
 keys arrive with their defaults on every placed copy, so nothing needs
 reconfiguring; **adding** an option key is safe, it is removing or renaming one
 that orphans stored values. See the root README.
+
+## Card size
+
+*Card size* draws every card of that copy at 125%, 150% or 200% of the normal
+size. The whole card scales: icon, status dot, name, status line, padding,
+corner radius. Headings and the gap between groups do not, so a large copy
+still reads as the same list, just bigger. The option is per copy, so a wide
+tile can carry big cards next to a dense one.
+
+It applies on every layout of the board. Homarr places a widget in all of a
+board's layouts with one shared set of options, so there is no "phone only"
+setting a widget can offer. For that, give the widget a class in **Advanced
+options**, **Custom CSS classes**, and size it from the board's stylesheet under
+a viewport media query. One font-size rule on the card's `Paper` is enough,
+because everything inside the card is sized in em:
+
+```css
+@media (max-width: 600px) {
+  .tagged-apps-lg .mantine-Paper-root { font-size: calc(var(--mantine-font-size-md) * 1.5) !important; }
+}
+```
+
+A class rule and the option do not multiply: both set the same font size on the
+card, and the stylesheet wins where its media query matches.
 
 ## Options
 
@@ -134,6 +158,7 @@ governs.
 | --- | --- | --- | --- |
 | `categories` | text | blank | Keywords to show, comma separated, in display order. Write `keyword=Heading` to relabel one. Blank shows the category picker. |
 | `appSort` | select | A to Z | Direction of the name order inside each group. Apps with a number in their description come first either way, lowest first. |
+| `cardSize` | select | Normal | How big each card is drawn: Normal, 125%, 150% or 200%. Icon, dot, name, status line and padding scale together. Per copy, on every layout. |
 | **`showCategoryHeader`** | switch | on | **Print the category name above each group.** Off keeps the gap between groups so they stay separated. |
 | `headerUppercase` | switch | on | Capitalise the headings. Off keeps the case you typed. |
 | **`showStatus`** | switch | on | **Ping the apps and show dots.** Off makes this a plain link list at no request cost. |
