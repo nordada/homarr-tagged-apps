@@ -193,7 +193,7 @@ dependency, and an invented key fails validation rather than being ignored. So
 every option is always shown and a dependent one simply does nothing, which is
 also how `statusLimit` and the colours behave when `showStatus` is off.
 
-Turning `clickToOpen` off costs about 5 cards of the render ceiling back, and
+Turning `clickToOpen` off gives 6 cards of the render ceiling back, and
 `showNewTabIcon` costs 1. See the ceiling table in the README.
 
 ### Colouring by value
@@ -234,7 +234,9 @@ wants much higher thresholds than a copy of local services.
 | green | 2xx, 3xx, or 401/403. Reachable, may want auth. |
 | orange | Other 4xx/5xx. Answering, but unhappy. |
 | red + `DOWN` | No response at all. |
-| grey | Not checked: past `statusLimit`, or past the 24th app. |
+| grey | No reply yet. |
+
+An app past `statusLimit`, or past the 24th, is not pinged and shows no dot.
 
 401 and 403 are green on purpose: the service answered, which for a down
 detector is "up".
@@ -272,10 +274,11 @@ times**, and the template fills one slot per app that copy is showing, up to
 24, and leaves the rest out.
 
 Every card mounts its own `SubFetch` and sends the *same* full id list, then
-reads its own slot. That looks wasteful and is deliberate: a board caps at
-roughly 8 concurrent requests, so one request per card would cap the widget at 8
-dots. Sending the full list means those 8 requests each carry all 24 results,
-and identical params let the 60 second cache collapse them.
+reads its own slot. That looks wasteful and is deliberate: Homarr caps concurrent
+requests, at 4 per user and tile and 8 per widget definition on v2.9.1, so one
+request per card would leave most dots waiting on the cap. Sending the full list
+means any one request carries all 24 results, and identical params let the 60
+second cache collapse them.
 
 Responses come back `207`. Slots you filled succeed, and slots beyond your app
 count report an input error the template never reads. Spare slots are left out
@@ -326,12 +329,13 @@ Works in view mode, not while editing, where the drag handler takes the gesture.
 
 ## Testing the dot colours
 
-`../tools/pingtest-apps.py` creates four throwaway apps tagged `pingtest`, one
-per colour, using local targets so they resolve fast:
+Create four throwaway apps tagged `pingtest`, with these ping URLs:
 
-```bash
-python3 ../tools/pingtest-apps.py            # create
-python3 ../tools/pingtest-apps.py --delete   # remove
-```
+| App | Ping URL | Shows |
+| --- | --- | --- |
+| 1 | a page that answers 200 | green |
+| 2 | a missing page on the same service, answering 404 | orange |
+| 3 | a port with nothing listening | red, `DOWN` |
+| 4 | any | no dot, past the limit |
 
-Set `categories` to `pingtest` and `statusLimit` to `3`.
+Set `categories` to `pingtest` and `statusLimit` to `3`, then delete the apps.
