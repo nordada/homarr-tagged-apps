@@ -219,7 +219,7 @@ Hand edits to the `.jsx` and `widget.json` are overwritten. The builder exists b
 template has to satisfy structural rules that are easy to break by hand, and it
 checks three of them, exiting non-zero on any: bracket balance, that `SubFetch`
 is still on one unbroken line, and that every option's `description` is within
-512 characters and `label` within 128.
+512 characters and `label` within 128. `description.txt` has the same 512 limit.
 
 That last check matters because the workbench only rejects an over-long
 description **on save**, after you have pasted, and the error does not name the

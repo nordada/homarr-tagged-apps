@@ -458,5 +458,8 @@ _widget = {
     "options": _json.loads(_opts_path.read_text()),
     "template": tpl,
 }
+if len(_widget["description"]) > 512:
+    print(f"description.txt: {len(_widget['description'])} chars, limit 512", file=_sys.stderr)
+    _sys.exit(1)
 (_here / "widget.json").write_text(_json.dumps(_widget, indent=2, ensure_ascii=False) + "\n")
 print(f"widget.json: {len(_widget['options'])} options, {len(_widget['requests'])} requests")
