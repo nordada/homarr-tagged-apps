@@ -173,11 +173,16 @@ CODE_LINE = ('<Group gap="0.3125em" wrap="nowrap" '
              f'{{[String({MS}).split(".")[0]," ms"].join("")}}</Text>):null}}'
              '</Group>')
 
-NAME = '<Text fw={700} size="0.75em" lineClamp={1}>{app.name}</Text>'
+# The line height is explicit because Mantine sets --text-lh to any size that is
+# not a theme token, so size="0.75em" alone gives a line height of 0.75 and
+# lineClamp's overflow:hidden cuts the descenders off. 1.4 is what size="xs"
+# carried before the card size option. style rather than lh, which older sandbox
+# builds reject.
+NAME = '<Text fw={700} size="0.75em" lineClamp={1} style={{lineHeight:1.4}}>{app.name}</Text>'
 # Only the dot variant wraps the name in a flex:1 Stack. Without a dot the name
 # is the sole child, so it has to carry the flex itself, otherwise the new-tab
 # glyph sits against the name rather than at the card's right edge.
-NAME_WIDE = '<Text fw={700} size="0.75em" lineClamp={1} flex={1} miw={0}>{app.name}</Text>'
+NAME_WIDE = '<Text fw={700} size="0.75em" lineClamp={1} flex={1} miw={0} style={{lineHeight:1.4}}>{app.name}</Text>'
 
 # Homarr cannot hide one option based on another: the option schema is a
 # strictObject of label/description/control/default/choices/choicesFrom/min/

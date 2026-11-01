@@ -153,12 +153,12 @@
       }
     },
     {
-      "label": "86 cards, just under the ceiling",
+      "label": "85 cards, just under the ceiling",
       "options": {
         "categories": "media"
       },
       "generate": {
-        "count": 86,
+        "count": 85,
         "sameTag": "media"
       }
     },
@@ -219,9 +219,9 @@
       }
     },
     {
-      "label": "85 cards, new tab icon, just under its ceiling",
+      "label": "84 cards, new tab icon, just under its ceiling",
       "generate": {
-        "count": 85,
+        "count": 84,
         "sameTag": "media"
       },
       "options": {

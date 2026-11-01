@@ -456,7 +456,7 @@ the same interpreter `tools/sandbox-check.sh` uses until the render fails:
 | 2 keywords per app | 355 |
 | 3 keywords per app | 260 |
 | every description a different sentence | 310 |
-| **apps shown in one widget's categories** | **86** |
+| **apps shown in one widget's categories** | **85** |
 
 That last one is the operation budget rather than the collection budget, it is
 about rendering cards rather than about the picker, and it has been there from
@@ -467,15 +467,16 @@ It moves with the link options, measured rather than estimated:
 | Card | Ceiling |
 | --- | --- |
 | before the link options existed | 94 |
-| default: clickable, new tab, no glyph | 86 |
-| **Open in a new tab** off | 86 |
-| **Card size** 200% | 86 |
-| **Show status dots** off | 90 |
-| **Cards open the app** off | 92 |
-| **Mark links that open a new tab** on | 85 |
+| default: clickable, new tab, no glyph | 85 |
+| **Open in a new tab** off | 85 |
+| **Card size** 200% | 85 |
+| **Show status dots** off | 89 |
+| **Cards open the app** off | 91 |
+| **Mark links that open a new tab** on | 84 |
 
 Nine cards of headroom went on making the link optional, and only one of those
-is the glyph. The cost is the choice itself: the card is emitted three times per
+is the glyph. An explicit line height on the app name cost one more, which the
+rows below the first include. The cost is the choice itself: the card is emitted three times per
 app, as the trigger content, the fallback and the resolved child, and JSX
 attribute values are evaluated when the element is built rather than when it is
 shown. Hoisting the option reads onto each app beside `_q`, and moving the
@@ -485,13 +486,13 @@ inline. That is why the hoisted form shipped, not because it was free.
 
 It moves with the order inside a category too, and here the change went the
 other way. Every row above was remeasured after the comparator was rewritten,
-which is why they sit two higher than the numbers quoted in the paragraph
+which is why they differ from the numbers quoted in the paragraph
 before this one; the gaps between rows are what that paragraph is about.
 
 | Order | Ceiling |
 | --- | --- |
-| A to Z, nothing numbered | 86 |
-| Z to A | 85 |
+| A to Z, nothing numbered | 85 |
+| Z to A | 84 |
 | every app carrying the same number | 84 |
 | every app numbered differently, names and numbers shuffled | 80 |
 
