@@ -435,3 +435,28 @@ if _opts_path.exists():
         _sys.exit(1)
     print(f"options.json: {len(_opts)} options within limits "
           f"(longest description {_longest}/512)")
+
+# widget.json is the one-file form of the widget, for Import and the Workshop.
+# Generated like template.jsx, so it cannot drift from the files it is built
+# from. A loopback source always means "this instance", which is what lets the
+# same definition work on any Homarr. The API key is never part of a definition.
+_here = _Path(__file__).parent
+_widget = {
+    "$schema": "homarr-custom-widget-v2",
+    "name": "Tagged-Apps",
+    "description": (_here / "description.txt").read_text().strip(),
+    "iconUrl": "https://raw.githubusercontent.com/nordada/homarr-tagged-apps/main/docs/icon.png",
+    "sources": {
+        "default": {
+            "name": "This Homarr instance",
+            "baseUrl": "http://127.0.0.1:7575",
+            "networkScope": "loopback",
+            "auth": {"type": "apiKeyHeader", "name": "ApiKey"},
+        }
+    },
+    "requests": _json.loads((_here / "requests.json").read_text()),
+    "options": _json.loads(_opts_path.read_text()),
+    "template": tpl,
+}
+(_here / "widget.json").write_text(_json.dumps(_widget, indent=2, ensure_ascii=False) + "\n")
+print(f"widget.json: {len(_widget['options'])} options, {len(_widget['requests'])} requests")

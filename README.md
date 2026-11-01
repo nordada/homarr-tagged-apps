@@ -172,24 +172,26 @@ state that does nothing still shows in the form.
 
 ## Installing
 
-Homarr keeps widget definitions in its own database, so the files here are the
-editable originals and pasting them in is what deploys them. Homarr's **Import**
-takes one complete widget JSON, which this repo does not ship, because the
-template, requests and options are kept as separate files.
+Under **Manage → Custom Widgets**, choose **Import** and pick `widget.json` from
+this repo. The Workshop entry installs the same definition.
 
-Under **Manage → Custom Widgets**, create a new widget and set up its API source
-first. The widget reads your app list and pings through Homarr's own API, so it
-needs a source with these values:
+The widget reads your app list and pings through Homarr's own API, so it then
+needs a key. Create an API key in Homarr, open the widget's **Configure sources**
+and enter it. The source itself comes with the import:
 
 | Field | Value |
 | --- | --- |
 | Source ID | `default` |
 | Base URL | `http://127.0.0.1:7575`, where Homarr listens inside its container |
 | Network access | loopback |
-| Authentication | API key in a header named `ApiKey`, with a key you create in Homarr |
+| Authentication | API key in a header named `ApiKey` |
 
 A loopback source always means "this instance", so the same definition works on
-any Homarr. Then paste each file into the matching section:
+any Homarr.
+
+Import always creates a new widget. To update one already on a board, paste
+each changed file into its section instead, so the copies on your boards stay
+attached to it. New options arrive with their defaults on every placed copy.
 
 | File | Section |
 | --- | --- |
@@ -202,9 +204,6 @@ any Homarr. Then paste each file into the matching section:
 template against the request config, so changing requests first can fail
 against a template that has not caught up.
 
-To update a widget already on a board, paste `template.jsx` and `options.json`
-again. New options arrive with their defaults on every placed copy.
-
 ## Editing
 
 `template.jsx` is **generated**. Edit `build-template.py` and re-run it:
@@ -213,7 +212,10 @@ again. New options arrive with their defaults on every placed copy.
 python3 build-template.py
 ```
 
-Hand edits to the `.jsx` are overwritten. The builder exists because the
+It also regenerates `widget.json` from `template.jsx`, `description.txt`,
+`requests.json` and `options.json`, so run it after changing any of them.
+
+Hand edits to the `.jsx` and `widget.json` are overwritten. The builder exists because the
 template has to satisfy structural rules that are easy to break by hand, and it
 checks three of them, exiting non-zero on any: bracket balance, that `SubFetch`
 is still on one unbroken line, and that every option's `description` is within

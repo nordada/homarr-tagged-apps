@@ -1,0 +1,226 @@
+{
+  "$schema": "homarr-custom-widget-v2",
+  "name": "Tagged-Apps",
+  "description": "Builds on Clarkar00's widget but uses the existing Homarr apps and ping plumbing.\n\nDense app links grouped by keyword, with live status dots. Tag apps with comma-separated keywords in the description, e.g. audio,favourites; an app can carry several, plus a number to order it. \"Categories to show\" sets which groups appear AND their order; blank shows all. Status pings up to 24 apps in one batched request per copy and uses each app's ping URL, so remote services work. Off on a copy means no request at all. Needs a Homarr API key: after installing, add one under Configure sources.",
+  "iconUrl": "https://raw.githubusercontent.com/nordada/homarr-tagged-apps/main/docs/icon.png",
+  "sources": {
+    "default": {
+      "name": "This Homarr instance",
+      "baseUrl": "http://127.0.0.1:7575",
+      "networkScope": "loopback",
+      "auth": {
+        "type": "apiKeyHeader",
+        "name": "ApiKey"
+      }
+    }
+  },
+  "requests": {
+    "apps": {
+      "source": "default",
+      "kind": "query",
+      "method": "GET",
+      "path": "/api/apps",
+      "trigger": "load",
+      "auth": "inherit",
+      "permission": "view",
+      "cacheSeconds": 60
+    },
+    "pings": {
+      "source": "default",
+      "kind": "query",
+      "method": "GET",
+      "path": "/api/trpc/widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping,widget.app.ping",
+      "trigger": "manual",
+      "query": {
+        "batch": "1",
+        "input": {
+          "$param": "q"
+        }
+      },
+      "auth": "inherit",
+      "permission": "view",
+      "cacheSeconds": 60
+    }
+  },
+  "options": {
+    "categories": {
+      "label": "Categories to show",
+      "description": "Comma-separated keywords, in the order you want the groups to appear, for example audio, youtube, arrs. Matches the keywords in each app description, case-insensitive, spaces ignored. Write keyword=Heading to show a heading other than the keyword itself, for example public=Alpha, admin=Bravo. The heading keeps the case and spaces you type. Leave blank to see every category this widget can find, with counts, ready to copy.",
+      "control": "text",
+      "default": ""
+    },
+    "appSort": {
+      "label": "Order within a category",
+      "description": "Apps in a group are listed by name, ignoring case. To place apps by hand, add a number beside the keywords in an app's description, for example media, 20. Numbered apps come first, lowest number first, whichever direction this is set to, and the rest follow by name. Leave gaps such as 10, 20, 30 so an app can be slotted in later. One number per app, used in every group it appears in.",
+      "control": "select",
+      "default": "az",
+      "choices": [
+        {
+          "label": "A to Z",
+          "value": "az"
+        },
+        {
+          "label": "Z to A",
+          "value": "za"
+        }
+      ]
+    },
+    "cardSize": {
+      "label": "Card size",
+      "description": "How big each app card is drawn, as a share of the normal size. Everything in the card scales together: icon, dot, name, status line, padding. Pick a larger size for a copy that should fill a wide tile or read well on a phone; the size applies to this copy on every layout of the board. For a size that applies on phones only, see the phone stylesheet note in the documentation.",
+      "control": "select",
+      "default": "1",
+      "choices": [
+        {
+          "label": "Normal",
+          "value": "1"
+        },
+        {
+          "label": "Larger (125%)",
+          "value": "1.25"
+        },
+        {
+          "label": "Large (150%)",
+          "value": "1.5"
+        },
+        {
+          "label": "Double (200%)",
+          "value": "2"
+        }
+      ]
+    },
+    "showCategoryHeader": {
+      "label": "Show category headings",
+      "description": "Print the category name above each group. Off still keeps the gap between groups, so they stay visually separated rather than running together. Useful when a widget shows a single category and the heading just repeats the tile title.",
+      "control": "switch",
+      "default": true
+    },
+    "headerUppercase": {
+      "label": "Uppercase the headings",
+      "description": "Headings are printed in capitals by default. Turn this off to keep exactly the case you typed, which matters once you are naming groups yourself: system=Charlie renders as CHARLIE with this on, Charlie with it off.",
+      "control": "switch",
+      "default": true
+    },
+    "showStatus": {
+      "label": "Show status dots",
+      "description": "Ping each app shown and colour a dot from the reply. Off makes this a plain link list and costs no requests at all. Everything below this until Show status code needs it on.",
+      "control": "switch",
+      "default": true
+    },
+    "statusLimit": {
+      "label": "Max apps with a dot",
+      "description": "How many apps get pinged, counting from the top. Leave blank for 24, which is the batch width. Apps past the limit still show, just without a dot.",
+      "control": "text",
+      "default": "24"
+    },
+    "highlightDown": {
+      "label": "Highlight unreachable apps",
+      "description": "Give a card that failed to respond a red border and a faint red fill, so a service being down reads at a glance rather than needing you to spot the dot.",
+      "control": "switch",
+      "default": true
+    },
+    "showCodes": {
+      "label": "Show status code",
+      "description": "Print the HTTP status under each app name, for example 200 or 404. An unreachable app reads DOWN instead.",
+      "control": "switch",
+      "default": true
+    },
+    "codePrefix": {
+      "label": "Status code prefix",
+      "description": "Text placed before the status code, so a bare number is not mistaken for the latency beside it. Defaults to \"HTTP \" (note the trailing space). Clear it for just the number. DOWN never takes a prefix.",
+      "control": "text",
+      "default": "HTTP "
+    },
+    "codeColor": {
+      "label": "Status code colour",
+      "description": "Colour for codes that count as OK: 2xx, 3xx, and 401/403. Any Mantine colour. Blank uses gray.6.",
+      "control": "text",
+      "default": "gray.6"
+    },
+    "codeWarnColor": {
+      "label": "Status code colour: questionable",
+      "description": "Colour for other 4xx and 5xx codes, which answered but are unhappy. Blank uses orange.6.",
+      "control": "text",
+      "default": "orange.6"
+    },
+    "codeErrColor": {
+      "label": "Status code colour: error",
+      "description": "Colour for anything outside 1xx-5xx. Blank uses red.6. Unreachable apps read DOWN and are always red regardless.",
+      "control": "text",
+      "default": "red.6"
+    },
+    "showLatency": {
+      "label": "Show ping latency",
+      "description": "Print how long the ping took, beside the status code. A service answering in 800 ms instead of 6 ms is degraded, which a green dot alone will not tell you.",
+      "control": "switch",
+      "default": true
+    },
+    "latencyColor": {
+      "label": "Latency colour",
+      "description": "Colour below the warning threshold. Blank uses gray.6.",
+      "control": "text",
+      "default": "gray.6"
+    },
+    "latencyWarnMs": {
+      "label": "Latency warning threshold (ms)",
+      "description": "Latency at or above this switches to the warning colour. Blank uses 300. Enter 0 to turn the band off.",
+      "control": "text",
+      "default": "300"
+    },
+    "latencyWarnColor": {
+      "label": "Latency colour: warning",
+      "description": "Used at or above the warning threshold. Blank uses blue.4.",
+      "control": "text",
+      "default": "blue.4"
+    },
+    "latencyBadMs": {
+      "label": "Latency bad threshold (ms)",
+      "description": "Latency at or above this switches to the bad colour. Blank uses 1000. Enter 0 to turn the band off. Should be higher than the warning threshold.",
+      "control": "text",
+      "default": "1000"
+    },
+    "latencyBadColor": {
+      "label": "Latency colour: bad",
+      "description": "Used at or above the bad threshold. Blank uses yellow.6.",
+      "control": "text",
+      "default": "yellow.6"
+    },
+    "statusAlignRight": {
+      "label": "Align status line right",
+      "description": "Push the status code and latency to the right edge of the card. They move together, since they share one line under the app name.",
+      "control": "switch",
+      "default": false
+    },
+    "hoverUnderline": {
+      "label": "Underline name on hover",
+      "description": "Underline the app name when you hover its card, so it reads as clickable. Homarr's sandbox blocks every other hover effect.",
+      "control": "switch",
+      "default": true
+    },
+    "clickToOpen": {
+      "label": "Cards open the app",
+      "description": "On, each card is a link to the app. Off makes this a read-only list: no link, no pointer cursor, no hover underline, so the widget shows what you run without anyone being able to click through. Turning this off also makes the two options below do nothing.",
+      "control": "switch",
+      "default": true
+    },
+    "openInNewTab": {
+      "label": "Open in a new tab",
+      "description": "On, a card opens the app in a new browser tab and leaves your board where it is. Off replaces the board in the current tab, so you come back with the browser's back button. Needs Cards open the app to be on.",
+      "control": "switch",
+      "default": true
+    },
+    "showNewTabIcon": {
+      "label": "Mark links that open a new tab",
+      "description": "Put a small faded arrow at the right edge of every card, the usual sign that a link leaves the page. Costs one element per card, which counts against the render budget on a long list. Needs both options above to be on, and does nothing otherwise.",
+      "control": "switch",
+      "default": false
+    },
+    "scrollWhenTall": {
+      "label": "Scroll when the list is too tall",
+      "description": "Show a scrollbar if the apps do not fit the tile. Off clips instead, which is tidier on a tile you have already sized to fit, but hides anything past the bottom edge.",
+      "control": "switch",
+      "default": true
+    }
+  },
+  "template": "<Stack gap={8} px=\"sm\" pb=\"sm\" style={{width:'100%',maxHeight:'100%',boxSizing:'border-box',paddingTop:'26px',overflowY:options.scrollWhenTall===false?'hidden':'auto',overflowX:'hidden',scrollbarWidth:'thin'}}>\n{(status.apps?.error||status.apps?.loading)\n  ? (status.apps?.error ? (<Alert color=\"red\">{status.apps.error}</Alert>) : (<Skeleton height={160} radius=\"md\"/>))\n  : (options.categories||\"\").split(\",\").map((e)=>e.split(\"=\")).map((p)=>[(p[0]||\"\").toLowerCase().replaceAll(\" \",\"\"),(p[1]||p[0]||\"\").trim()]).filter((p)=>p[0]!==\"\").length===0 ? (<Stack gap={10} p=\"xs\" style={{userSelect:'text',WebkitUserSelect:'text',cursor:'text'}}>{[data.apps.filter((a)=>(a.description||\"\")!==\"\").map((a)=>(a.description||\"\").toLowerCase().replaceAll(\" \",\"\")).join(\",\")].map((str)=>([str.split(\",\").filter((k)=>k!==\"\"&&isFinite(k)===false)].map((all)=>all.length===0?(<Stack gap={8}><Text fw={700} fz=\"sm\" tt=\"uppercase\" ta=\"center\">No categories yet</Text><Text size=\"sm\" c=\"dimmed\" ta=\"center\" style={{lineHeight:1.5}}>This widget groups your apps by keywords you write in the Description field of each app. In Homarr go to Manage, then Apps, edit an app, and set its description to a keyword such as media or servers. Separate several with commas.</Text><Text size=\"xs\" c=\"dimmed\" ta=\"center\" style={{lineHeight:1.5}}>Apps with an empty description never appear here. Once you have tagged a few, this panel lists them for you.</Text><Anchor href=\"https://github.com/nordada/homarr-tagged-apps\" target=\"_blank\" size=\"xs\" ta=\"center\">Options and setup guide</Anchor></Stack>):([all.reduce((acc,k)=>acc.includes(\",\"+k+\",\")?acc:acc+k+\",\",\",\").split(\",\").filter((k)=>k!==\"\")].map((u0)=>([u0.length>60?u0:u0.sort((a,b)=>a<b?-1:(a>b?1:0))].map((uniq)=>(<Stack gap={10}><Text fw={700} fz=\"sm\" tt=\"uppercase\" ta=\"center\">Available categories</Text><Text size=\"sm\" c=\"dimmed\" ta=\"center\" style={{lineHeight:1.5}}>Copy the ones you want into the categories option, separated by commas, in the order you want the groups stacked.</Text><Group gap={6} justify=\"center\">{uniq.map((k)=>(<Paper key={k} withBorder radius={999} style={{padding:'3px 10px',userSelect:'text',WebkitUserSelect:'text'}}><Group gap={6} wrap=\"nowrap\"><Text size=\"sm\" fw={600}>{k}</Text><Text size=\"xs\" c=\"dimmed\">{(\",\"+str.replaceAll(\",\",\",,\")+\",\").split(\",\"+k+\",\").length-1}</Text></Group></Paper>))}</Group><Text size=\"xs\" c=\"dimmed\" ta=\"center\">All of them, ready to paste:</Text><Paper withBorder radius={6} style={{padding:'6px 10px',userSelect:'text',WebkitUserSelect:'text'}}><Text size=\"xs\" ta=\"center\" style={{lineHeight:1.6,wordBreak:'break-word'}}>{uniq.join(\", \")}</Text></Paper><Text size=\"xs\" c=\"dimmed\" ta=\"center\" style={{lineHeight:1.5}}>The number is how many apps carry that category. A widget cannot see other widgets, so every category is listed, not just unused ones.</Text><Anchor href=\"https://github.com/nordada/homarr-tagged-apps\" target=\"_blank\" size=\"xs\" ta=\"center\">Options and setup guide</Anchor></Stack>))[0]))[0]))[0]))}</Stack>)\n  : [[(options.categories||\"\").split(\",\").map((e)=>e.split(\"=\")).map((p)=>[(p[0]||\"\").toLowerCase().replaceAll(\" \",\"\"),(p[1]||p[0]||\"\").trim()]).filter((p)=>p[0]!==\"\")].map((keys)=>[data.apps.filter((a)=>(a.description||\"\")!==\"\").map((a)=>[(a.description||\"\").toLowerCase().replaceAll(\" \",\"\")].map((d)=>({...a,_d:d,_gi:keys.length===0?0:keys.findIndex((k)=>(\",\"+d+\",\").includes(\",\"+k[0]+\",\"))}))[0]).filter((a)=>a._gi>=0).map((a)=>({...a,_g:keys.length===0?a._d.split(\",\")[0]:keys[a._gi][1],_n:(a.name||\"\").toLowerCase(),_sd:options.appSort===\"za\"?-1:1,_o:Number(a._d.split(\",\").filter((t)=>t!==\"\"&&isFinite(t))[0]||1000000)})).sort((x,y)=>x._gi!==y._gi?x._gi-y._gi:(x._o!==y._o?x._o-y._o:(x._n<y._n?-x._sd:(x._n>y._n?x._sd:0))))].map((arr)=>[[['{',\"0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23\".split(\",\").slice(0,arr.length).map((s,n)=>['\"',n,'\":{\"json\":{\"id\":\"',arr[n].id,'\"}}'].join(\"\")).join(','),'}'].join(\"\"),options.clickToOpen!==false,options.openInNewTab===false?\"_self\":\"_blank\",options.showNewTabIcon===true&&options.clickToOpen!==false&&options.openInNewTab!==false,\"calc(var(--mantine-font-size-md) * \"+(Number(options.cardSize)||1)+\")\"]].map((b)=>arr.map((a)=>({...a,_q:b[0],_cl:b[1]&&a.href,_tg:b[2],_ic:b[3]&&a.href,_fz:b[4]})))[0])[0])[0]].map((list)=>(\n      list.length===0\n      ? (<Text size=\"xs\" c=\"dimmed\" ta=\"center\" p=\"md\">No apps matched.</Text>)\n      : list.map((app,i)=>(\n          <Stack key={app.id} gap={2}>\n            {(options.showCategoryHeader===false)?((i===0||list[i-1]._gi!==app._gi)&&i!==0?(<Space h=\"10px\"/>):null):((i===0||list[i-1]._gi!==app._gi)?(<Text fw={700} tt={options.headerUppercase===false?\"none\":\"uppercase\"} c=\"dimmed\" fz=\"xs\" mt={i===0?0:\"10px\"} mb=\"2px\" ta=\"center\">{app._g}</Text>):null)}\n            {app._cl?(<Anchor href={app.href} target={app._tg} underline={options.hoverUnderline===false?\"never\":\"hover\"} c=\"inherit\" display=\"block\">{(options.showStatus&&i<(Number(options.statusLimit)||24)?(<SubFetch key={app.id} requestId=\"pings\" params={{q:app._q}} trigger=\"auto\" triggerAriaLabel={\"Check \"+app.name} loadingLabel=\"Checking\" fallback={<Paper withBorder radius=\"0.375em\" p=\"0.625em\" fz={app._fz}><Skeleton height=\"1.5em\" radius=\"sm\"/></Paper>} triggerContent={<Paper withBorder radius=\"0.375em\" p=\"0.625em\" fz={app._fz}><Group wrap=\"nowrap\" gap=\"0.625em\" justify=\"start\"><Image src={app.iconUrl} alt={app.name} w=\"1.5em\" h=\"1.5em\" fit=\"contain\"/><Text fw={700} size=\"0.75em\" lineClamp={1} flex={1} miw={0} style={{lineHeight:1.4}}>{app.name}</Text>{app._ic?(<TablerIcon name=\"external-link\" size=\"0.85em\" stroke={1.75} color=\"#909296\"/>):null}</Group></Paper>}>{(res)=>[(res||[])[i]].map((r)=>[[r?((r.result&&r.result.data&&r.result.data.json&&Number(r.result.data.json.statusCode)>=100&&Number(r.result.data.json.statusCode)<600)?Number(r.result.data.json.statusCode):-1):null,r&&r.result&&r.result.data&&r.result.data.json&&r.result.data.json.durationMs!==undefined&&r.result.data.json.durationMs!==null?Number(r.result.data.json.durationMs):-1]].map((v)=>(<Paper withBorder radius=\"0.375em\" p=\"0.625em\" fz={app._fz} bg={options.highlightDown&&v[0]===-1?\"rgba(224,49,49,0.10)\":\"transparent\"} style={{borderColor:options.highlightDown&&v[0]===-1?\"var(--mantine-color-red-6)\":undefined}}><Group wrap=\"nowrap\" gap=\"0.625em\" justify=\"start\"><Indicator size=\"0.5em\" offset={3} position=\"bottom-end\" withBorder color={v[0]===null?\"gray.6\":(v[0]===-1?\"red\":(((v[0]>=200&&v[0]<400)||v[0]===401||v[0]===403)?\"green\":((v[0]>=400&&v[0]<600)?\"orange\":\"red\")))}><Image src={app.iconUrl} alt={app.name} w=\"1.5em\" h=\"1.5em\" fit=\"contain\"/></Indicator><Stack gap=\"0.125em\" flex={1} miw={0}><Text fw={700} size=\"0.75em\" lineClamp={1} style={{lineHeight:1.4}}>{app.name}</Text><Group gap=\"0.3125em\" wrap=\"nowrap\" justify={options.statusAlignRight?\"flex-end\":\"flex-start\"}>{options.showCodes===false||v[0]===null?null:(<Text size=\"0.5625em\" fw={v[0]===-1?700:400} c={v[0]===-1?\"red.5\":(((v[0]>=200&&v[0]<400)||v[0]===401||v[0]===403)?(options.codeColor||\"gray.6\"):((v[0]>=400&&v[0]<600)?(options.codeWarnColor||\"orange.6\"):(options.codeErrColor||\"red.6\")))}>{v[0]===-1?\"DOWN\":[options.codePrefix===undefined||options.codePrefix===null?\"HTTP \":options.codePrefix,v[0]].join(\"\")}</Text>)}{(options.showLatency!==false&&v[0]>0&&v[1]>=0)?(<Text size=\"0.5625em\" c={(v[1]>=Number(options.latencyBadMs||1000)&&Number(options.latencyBadMs||1000)>0)?(options.latencyBadColor||\"yellow.6\"):((v[1]>=Number(options.latencyWarnMs||300)&&Number(options.latencyWarnMs||300)>0)?(options.latencyWarnColor||\"blue.4\"):(options.latencyColor||\"gray.6\"))}>{[String(v[1]).split(\".\")[0],\" ms\"].join(\"\")}</Text>):null}</Group></Stack>{app._ic?(<TablerIcon name=\"external-link\" size=\"0.85em\" stroke={1.75} color=\"#909296\"/>):null}</Group></Paper>)))}</SubFetch>):<Paper withBorder radius=\"0.375em\" p=\"0.625em\" fz={app._fz}><Group wrap=\"nowrap\" gap=\"0.625em\" justify=\"start\"><Image src={app.iconUrl} alt={app.name} w=\"1.5em\" h=\"1.5em\" fit=\"contain\"/><Text fw={700} size=\"0.75em\" lineClamp={1} flex={1} miw={0} style={{lineHeight:1.4}}>{app.name}</Text>{app._ic?(<TablerIcon name=\"external-link\" size=\"0.85em\" stroke={1.75} color=\"#909296\"/>):null}</Group></Paper>)}</Anchor>):(options.showStatus&&i<(Number(options.statusLimit)||24)?(<SubFetch key={app.id} requestId=\"pings\" params={{q:app._q}} trigger=\"auto\" triggerAriaLabel={\"Check \"+app.name} loadingLabel=\"Checking\" fallback={<Paper withBorder radius=\"0.375em\" p=\"0.625em\" fz={app._fz}><Skeleton height=\"1.5em\" radius=\"sm\"/></Paper>} triggerContent={<Paper withBorder radius=\"0.375em\" p=\"0.625em\" fz={app._fz}><Group wrap=\"nowrap\" gap=\"0.625em\" justify=\"start\"><Image src={app.iconUrl} alt={app.name} w=\"1.5em\" h=\"1.5em\" fit=\"contain\"/><Text fw={700} size=\"0.75em\" lineClamp={1} flex={1} miw={0} style={{lineHeight:1.4}}>{app.name}</Text>{app._ic?(<TablerIcon name=\"external-link\" size=\"0.85em\" stroke={1.75} color=\"#909296\"/>):null}</Group></Paper>}>{(res)=>[(res||[])[i]].map((r)=>[[r?((r.result&&r.result.data&&r.result.data.json&&Number(r.result.data.json.statusCode)>=100&&Number(r.result.data.json.statusCode)<600)?Number(r.result.data.json.statusCode):-1):null,r&&r.result&&r.result.data&&r.result.data.json&&r.result.data.json.durationMs!==undefined&&r.result.data.json.durationMs!==null?Number(r.result.data.json.durationMs):-1]].map((v)=>(<Paper withBorder radius=\"0.375em\" p=\"0.625em\" fz={app._fz} bg={options.highlightDown&&v[0]===-1?\"rgba(224,49,49,0.10)\":\"transparent\"} style={{borderColor:options.highlightDown&&v[0]===-1?\"var(--mantine-color-red-6)\":undefined}}><Group wrap=\"nowrap\" gap=\"0.625em\" justify=\"start\"><Indicator size=\"0.5em\" offset={3} position=\"bottom-end\" withBorder color={v[0]===null?\"gray.6\":(v[0]===-1?\"red\":(((v[0]>=200&&v[0]<400)||v[0]===401||v[0]===403)?\"green\":((v[0]>=400&&v[0]<600)?\"orange\":\"red\")))}><Image src={app.iconUrl} alt={app.name} w=\"1.5em\" h=\"1.5em\" fit=\"contain\"/></Indicator><Stack gap=\"0.125em\" flex={1} miw={0}><Text fw={700} size=\"0.75em\" lineClamp={1} style={{lineHeight:1.4}}>{app.name}</Text><Group gap=\"0.3125em\" wrap=\"nowrap\" justify={options.statusAlignRight?\"flex-end\":\"flex-start\"}>{options.showCodes===false||v[0]===null?null:(<Text size=\"0.5625em\" fw={v[0]===-1?700:400} c={v[0]===-1?\"red.5\":(((v[0]>=200&&v[0]<400)||v[0]===401||v[0]===403)?(options.codeColor||\"gray.6\"):((v[0]>=400&&v[0]<600)?(options.codeWarnColor||\"orange.6\"):(options.codeErrColor||\"red.6\")))}>{v[0]===-1?\"DOWN\":[options.codePrefix===undefined||options.codePrefix===null?\"HTTP \":options.codePrefix,v[0]].join(\"\")}</Text>)}{(options.showLatency!==false&&v[0]>0&&v[1]>=0)?(<Text size=\"0.5625em\" c={(v[1]>=Number(options.latencyBadMs||1000)&&Number(options.latencyBadMs||1000)>0)?(options.latencyBadColor||\"yellow.6\"):((v[1]>=Number(options.latencyWarnMs||300)&&Number(options.latencyWarnMs||300)>0)?(options.latencyWarnColor||\"blue.4\"):(options.latencyColor||\"gray.6\"))}>{[String(v[1]).split(\".\")[0],\" ms\"].join(\"\")}</Text>):null}</Group></Stack>{app._ic?(<TablerIcon name=\"external-link\" size=\"0.85em\" stroke={1.75} color=\"#909296\"/>):null}</Group></Paper>)))}</SubFetch>):<Paper withBorder radius=\"0.375em\" p=\"0.625em\" fz={app._fz}><Group wrap=\"nowrap\" gap=\"0.625em\" justify=\"start\"><Image src={app.iconUrl} alt={app.name} w=\"1.5em\" h=\"1.5em\" fit=\"contain\"/><Text fw={700} size=\"0.75em\" lineClamp={1} flex={1} miw={0} style={{lineHeight:1.4}}>{app.name}</Text>{app._ic?(<TablerIcon name=\"external-link\" size=\"0.85em\" stroke={1.75} color=\"#909296\"/>):null}</Group></Paper>)}\n          </Stack>\n        ))\n    ))\n}\n</Stack>\n"
+}
