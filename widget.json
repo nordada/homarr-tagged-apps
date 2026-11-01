@@ -1,7 +1,7 @@
 {
   "$schema": "homarr-custom-widget-v2",
   "name": "Tagged-Apps",
-  "description": "Builds on Clarkar00's widget but uses the existing Homarr apps and ping plumbing.\n\nDense app links grouped by keyword, with live status dots. Tag apps with comma-separated keywords in the description, e.g. audio,favourites, plus a number to order them. \"Categories to show\" sets which groups appear and their order; blank shows all. Pings up to 24 apps per copy using each app's ping URL, so remote services work. Needs a Homarr API key: add one under Configure sources after installing.",
+  "description": "Builds on Clarkar00's widget but uses the existing Homarr apps and ping plumbing.\n\nDense app links grouped by keyword, with live status dots. Tag apps with comma-separated keywords in the description, e.g. audio,favourites, plus a number to order them. \"Categories to show\" sets which groups appear and their order; blank shows all. Pings up to 24 apps per copy using each app's ping URL, so remote services work. After installing, open Configure sources and add a Homarr API key.",
   "iconUrl": "https://raw.githubusercontent.com/nordada/homarr-tagged-apps/main/docs/icon.png",
   "sources": {
     "default": {

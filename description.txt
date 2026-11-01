@@ -1,3 +1,3 @@
 Builds on Clarkar00's widget but uses the existing Homarr apps and ping plumbing.
 
-Dense app links grouped by keyword, with live status dots. Tag apps with comma-separated keywords in the description, e.g. audio,favourites, plus a number to order them. "Categories to show" sets which groups appear and their order; blank shows all. Pings up to 24 apps per copy using each app's ping URL, so remote services work. Needs a Homarr API key: add one under Configure sources after installing.
+Dense app links grouped by keyword, with live status dots. Tag apps with comma-separated keywords in the description, e.g. audio,favourites, plus a number to order them. "Categories to show" sets which groups appear and their order; blank shows all. Pings up to 24 apps per copy using each app's ping URL, so remote services work. After installing, open Configure sources and add a Homarr API key.
