@@ -268,8 +268,8 @@ which option is at fault.
 
 A custom widget request is a fixed string, and only `SubFetch` can feed it
 values from the template. So `requests.json` declares `widget.app.ping` **24
-times**, and the template fills the slots with the ids of the apps that copy is
-showing, padding spare slots with a repeat of the first app.
+times**, and the template fills one slot per app that copy is showing, up to
+24, and leaves the rest out.
 
 Every card mounts its own `SubFetch` and sends the *same* full id list, then
 reads its own slot. That looks wasteful and is deliberate: a board caps at
@@ -277,8 +277,10 @@ roughly 8 concurrent requests, so one request per card would cap the widget at 8
 dots. Sending the full list means those 8 requests each carry all 24 results,
 and identical params let the 60 second cache collapse them.
 
-Responses come back `207`. Slots you filled succeed, padding repeats succeed,
-and slots beyond your app count report an error the template reads as grey.
+Responses come back `207`. Slots you filled succeed, and slots beyond your app
+count report an input error the template never reads. Spare slots are left out
+on purpose: filling them with a repeat of an app pings that app once per repeat,
+so one unreachable app could take the whole batch past the request timeout.
 
 ## FAQ
 

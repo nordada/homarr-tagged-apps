@@ -146,7 +146,8 @@ bash tools/sandbox-check.sh 3aa14e22
 Cases live in `sandbox-cases.json`. A case either names its apps or asks for a
 generated instance (`"generate": {"count": 250, "tagsEach": 3}`), and the
 generated ones are the point: four hand-written apps sit far inside every
-budget, and a real board does not.
+budget, and a real board does not. A case can also set `"pings": 8` to assert
+that its status batch carries exactly that many distinct apps.
 
 It fetches Homarr's `packages/custom-widgets` at that ref, bundles the real
 interpreter and renders `template.jsx` through it once per case, with the

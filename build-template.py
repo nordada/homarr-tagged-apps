@@ -64,8 +64,12 @@ PIPELINE = ('data.apps.filter((a)=>(a.description||"")!=="")'
             '(x._n<y._n?-x._sd:(x._n>y._n?x._sd:0))))')
 
 # identical for every card, so build once and hang it on each app as _q
+# One input per app, with spare slots left out rather than repeating an app: a
+# repeat is a real ping, so one unreachable app used to be pinged up to 24 times
+# and took the whole batch past the request timeout. See WIDGET.md.
 QEXPR = ('[\'{\',' + IDX +
-         '.map((s,n)=>[\'"\',n,\'":{"json":{"id":"\',(arr[n]||arr[0]).id,\'"}}\'].join(""))'
+         '.slice(0,arr.length)'
+         '.map((s,n)=>[\'"\',n,\'":{"json":{"id":"\',arr[n].id,\'"}}\'].join(""))'
          '.join(\',\'),\'}\'].join("")')
 
 # The link options are read once per render and hung on each app beside _q,

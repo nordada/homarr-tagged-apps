@@ -41,6 +41,7 @@ const cases = caseFile.cases.map((entry) => [
   entry.label,
   entry.options ?? {},
   entry.generate ? generate(entry.generate) : (entry.apps ?? apps),
+  entry.pings,
 ]);
 
 // Every component resolves, so a case fails on the expression, not on a name.
@@ -59,7 +60,7 @@ const components = new Proxy(
 );
 
 let failed = 0;
-for (const [label, options, data] of cases) {
+for (const [label, options, data, pings] of cases) {
   try {
     const result = renderSafeJsx({
       template,
@@ -67,13 +68,27 @@ for (const [label, options, data] of cases) {
       bindings: { ...createCustomJsxBindings({ apps: data }), options: { ...defaults, ...options }, status: {}, inputs: {} },
     });
     const text = [];
+    const batches = [];
     const walk = (node) => {
       if (node == null || typeof node === "boolean" || typeof node === "function") return;
       if (typeof node === "string" || typeof node === "number") return void text.push(String(node));
       if (Array.isArray(node)) return void node.forEach(walk);
+      if (node.props?.params?.q) batches.push(node.props.params.q);
       if (node.props) walk(node.props.children);
     };
     walk(result.node);
+    // A case can state how many apps its ping batch carries. Every card sends
+    // the same batch, and each app must appear once: a repeated id is pinged
+    // once per repeat, so one dead app can time out the whole request.
+    if (pings !== undefined) {
+      if (batches.length === 0) throw new Error("no ping batch rendered");
+      for (const batch of batches) {
+        const ids = Object.values(JSON.parse(batch)).map((slot) => slot.json.id);
+        if (ids.length !== pings || new Set(ids).size !== ids.length) {
+          throw new Error(`expected ${pings} distinct pings, got ${ids.length} (${new Set(ids).size} distinct)`);
+        }
+      }
+    }
     const warnings = (result.warnings ?? []).length;
     const rendered = text.join(" ").replace(/\s+/g, " ").trim();
     console.log(

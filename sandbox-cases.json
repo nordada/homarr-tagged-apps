@@ -628,6 +628,50 @@
         "count": 84,
         "sameTag": "media, 7"
       }
+    },
+    {
+      "label": "pings: one app, one slot",
+      "options": {
+        "categories": "media"
+      },
+      "generate": {
+        "count": 1,
+        "sameTag": "media"
+      },
+      "pings": 1
+    },
+    {
+      "label": "pings: 8 apps, no padding",
+      "options": {
+        "categories": "media"
+      },
+      "generate": {
+        "count": 8,
+        "sameTag": "media"
+      },
+      "pings": 8
+    },
+    {
+      "label": "pings: 24 apps fill the batch",
+      "options": {
+        "categories": "media"
+      },
+      "generate": {
+        "count": 24,
+        "sameTag": "media"
+      },
+      "pings": 24
+    },
+    {
+      "label": "pings: 30 apps, batch stops at 24",
+      "options": {
+        "categories": "media"
+      },
+      "generate": {
+        "count": 30,
+        "sameTag": "media"
+      },
+      "pings": 24
     }
   ]
 }
